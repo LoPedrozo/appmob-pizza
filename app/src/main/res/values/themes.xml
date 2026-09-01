@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tema usado pela janela do Android (fundo e barra de titulo).
+     NoActionBar = sem barra de titulo, porque a tela e feita no Compose. -->
+<resources>
+    <style name="Theme.Fatia" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

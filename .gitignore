@@ -1,0 +1,16 @@
+# Arquivos gerados pelo build (nao devem ir para o Git)
+build/
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Configuracoes locais da maquina (caminho do Android SDK)
+local.properties
+
+# Arquivos do Android Studio / IntelliJ
+.idea/
+*.iml
+
+# macOS
+.DS_Store
