@@ -3,60 +3,68 @@ package com.example.fatia
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.fatia.ui.screens.CardapioScreen
+import com.example.fatia.ui.screens.ConfirmacaoScreen
+import com.example.fatia.ui.screens.LoginScreen
 import com.example.fatia.ui.theme.FatiaTheme
 
-// Tela inicial do app. E a primeira coisa que abre quando o app inicia.
+// Activity principal: e a primeira coisa que abre quando o app inicia.
 class MainActivity : ComponentActivity() {
 
     // onCreate e chamado pelo Android quando a tela e criada.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Faz o app usar a tela inteira (atras da barra de status).
+        enableEdgeToEdge()
+
         // setContent diz qual conteudo Compose vai aparecer na tela.
         setContent {
-            // Aplica o tema do app (cores do Material 3).
+            // Aplica o tema do app (cores e textos do Material 3).
             FatiaTheme {
-                // Surface e a "folha de fundo" da tela.
-                Surface(
-                    // fillMaxSize faz ocupar a tela toda.
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    TelaTemporaria()
+                // Scaffold e a estrutura basica da tela.
+                // innerPadding e o espaco das barras do sistema.
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    AppFatia(Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 
-// Funcao @Composable = um pedaco de tela feito com Jetpack Compose.
-// Por enquanto e so um texto provisorio, ate criarmos as telas de verdade.
+// Aqui decidimos QUAL tela aparece.
+// Guardamos o nome da tela atual numa variavel de estado e usamos when
+// para escolher. Quando a variavel muda, o Compose redesenha a tela.
 @Composable
-fun TelaTemporaria() {
-    // Box empilha o conteudo; contentAlignment centraliza no meio da tela.
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Fatia - em construção")
-    }
-}
+fun AppFatia(modifier: Modifier = Modifier) {
 
-// @Preview mostra essa tela no painel de visualizacao do Android Studio,
-// sem precisar rodar o app no celular/emulador.
-@Preview(showBackground = true)
-@Composable
-fun TelaTemporariaPreview() {
-    FatiaTheme {
-        TelaTemporaria()
+    // remember + mutableStateOf = variavel que a tela "lembra" e observa.
+    // Comeca na tela de login.
+    var telaAtual by remember { mutableStateOf("login") }
+
+    when (telaAtual) {
+        // Cada tela recebe uma funcao (lambda) que diz para onde ir depois.
+        "login" -> LoginScreen(
+            modifier = modifier,
+            onEntrar = { telaAtual = "cardapio" }
+        )
+        "cardapio" -> CardapioScreen(
+            modifier = modifier,
+            onFinalizarPedido = { telaAtual = "confirmacao" }
+        )
+        "confirmacao" -> ConfirmacaoScreen(
+            modifier = modifier,
+            onVoltarAoCardapio = { telaAtual = "cardapio" }
+        )
     }
 }

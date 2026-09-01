@@ -13,11 +13,12 @@ private val CoresDoApp = lightColorScheme(
 )
 
 // Tema do app.
-// Tudo que for colocado dentro de FatiaTheme { ... } usa essas cores.
+// Tudo que for colocado dentro de FatiaTheme { ... } usa essas cores e textos.
 @Composable
 fun FatiaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = CoresDoApp,
+        typography = Typography,
         content = content
     )
 }

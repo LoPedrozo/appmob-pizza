@@ -1,5 +1,0 @@
-Pasta (pacote) com.example.fatia.ui.screens
-
-Aqui vao ficar os arquivos das telas do app, criados na proxima etapa.
-Este arquivo existe apenas para a pasta nao ficar vazia e ser salva no
-Git. Pode ser apagado quando a primeira tela for criada.
