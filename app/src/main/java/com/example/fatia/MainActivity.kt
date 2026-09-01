@@ -52,19 +52,29 @@ fun AppFatia(modifier: Modifier = Modifier) {
     // Comeca na tela de login.
     var telaAtual by remember { mutableStateOf("login") }
 
+    // Guarda o nome da pizza escolhida no cardapio, para mostrar
+    // depois na tela de confirmacao.
+    var pizzaEscolhida by remember { mutableStateOf("") }
+
     when (telaAtual) {
         // Cada tela recebe uma funcao (lambda) que diz para onde ir depois.
         "login" -> LoginScreen(
             modifier = modifier,
             onEntrar = { telaAtual = "cardapio" }
         )
+        // O cardapio devolve o nome da pizza clicada. Guardamos esse nome
+        // e so depois trocamos de tela.
         "cardapio" -> CardapioScreen(
             modifier = modifier,
-            onFinalizarPedido = { telaAtual = "confirmacao" }
+            onPizzaEscolhida = { nome ->
+                pizzaEscolhida = nome
+                telaAtual = "confirmacao"
+            }
         )
         "confirmacao" -> ConfirmacaoScreen(
             modifier = modifier,
-            onVoltarAoCardapio = { telaAtual = "cardapio" }
+            nomePizza = pizzaEscolhida,
+            onVoltarClick = { telaAtual = "cardapio" }
         )
     }
 }
