@@ -74,7 +74,8 @@ fun CardapioScreen(
                 text = "Olá, Ana!",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
+                // secondary = azul do mockup, usado nos titulos
+                color = MaterialTheme.colorScheme.secondary
             )
             // Icone apenas decorativo (nao faz nada quando clicado).
             Icon(

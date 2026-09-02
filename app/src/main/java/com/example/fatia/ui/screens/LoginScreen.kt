@@ -38,25 +38,21 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fatia.ui.theme.AzulEscuroFatia
+import com.example.fatia.ui.theme.AzulFatia
+import com.example.fatia.ui.theme.CinzaFatia
+import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.theme.FatiaTheme
-
-// Cores do mockup da tela 1.
-// O formato e 0xAARRGGBB: AA = transparencia (FF = opaco), depois R, G e B.
-val AzulFatia = Color(0xFF2F3C7E)        // azul principal (fundo da tela)
-val AzulEscuroFatia = Color(0xFF1A2050)  // azul escuro (barra superior)
-val CoralFatia = Color(0xFFF96167)       // coral de destaque (botao e logo)
-val CinzaFatia = Color(0xFF757575)       // cinza do subtitulo
 
 // TELA 1 - LOGIN / CADASTRO
 // Mockup estatico: nada aqui valida ou autentica nada, os botoes so existem
 // para mostrar o visual da tela.
 //
 // onEntrar e uma funcao recebida de fora (contrato definido na MainActivity).
-// Tem valor padrao vazio para o @Preview conseguir chamar so LoginScreen(...).
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    onEntrar: () -> Unit = { }
+    onEntrar: () -> Unit
 ) {
     // remember + mutableStateOf = a tela "lembra" o que foi digitado.
     // Serve so para o campo funcionar visualmente.
@@ -199,6 +195,6 @@ fun LogoFatia(modifier: Modifier = Modifier) {
 @Composable
 fun LoginScreenPreview() {
     FatiaTheme {
-        LoginScreen(Modifier.fillMaxSize())
+        LoginScreen(onEntrar = {})
     }
 }

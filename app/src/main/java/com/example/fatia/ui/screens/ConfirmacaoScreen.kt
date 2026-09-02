@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fatia.R
 import com.example.fatia.ui.theme.FatiaTheme
+import com.example.fatia.ui.theme.VerdeFatia
 
 // TELA 3 - CONFIRMACAO DO PEDIDO
 // nomePizza = nome da pizza que o usuario escolheu no cardapio.
@@ -43,7 +44,8 @@ fun ConfirmacaoScreen(
         Icon(
             painter = painterResource(R.drawable.ic_check),
             contentDescription = "Pedido confirmado",
-            tint = MaterialTheme.colorScheme.primary,
+            // verde de sucesso, igual ao mockup da tela 5
+            tint = VerdeFatia,
             modifier = Modifier.size(64.dp)
         )
 
@@ -51,7 +53,8 @@ fun ConfirmacaoScreen(
             text = "Pedido confirmado!",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
+            // secondary = azul do mockup, usado nos titulos
+            color = MaterialTheme.colorScheme.secondary
         )
 
         // Numero do pedido fixo, so para o mockup.
