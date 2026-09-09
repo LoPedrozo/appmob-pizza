@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
 import com.example.fatia.ui.screens.LoginScreen
+import com.example.fatia.ui.screens.PersonalizarPizzaScreen
 import com.example.fatia.ui.theme.FatiaTheme
 
 // Activity principal: e a primeira coisa que abre quando o app inicia.
@@ -35,7 +36,12 @@ class MainActivity : ComponentActivity() {
                 // Scaffold e a estrutura basica da tela.
                 // innerPadding e o espaco das barras do sistema.
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppFatia(Modifier.padding(innerPadding))
+                    // TELA 3 - mostrando a tela de personalizar pizza para
+                    // apresentar esta etapa do trabalho.
+                    // Para voltar ao fluxo completo do app (login -> cardapio
+                    // -> confirmacao), troque a linha abaixo por:
+                    // AppFatia(Modifier.padding(innerPadding))
+                    PersonalizarPizzaScreen(Modifier.padding(innerPadding))
                 }
             }
         }
