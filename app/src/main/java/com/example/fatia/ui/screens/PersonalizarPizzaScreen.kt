@@ -42,10 +42,17 @@ import com.example.fatia.ui.theme.FatiaTheme
 val CinzaChipFatia = Color(0xFFF0F0F0)
 
 // TELA 3 - PERSONALIZAR PIZZA
-// Mockup estatico: nada aqui calcula preco nem soma quantidade.
 // O preco e fixo em R$ 39 e a quantidade fica sempre em 1, igual ao mockup.
+//
+// nomePizza = nome que veio como argumento da rota Personalizar.
+// onAdicionar = funcao recebida de fora, chamada no botao "Adicionar".
+// A tela nao conhece o navController: quem navega e o AppNavigation.
 @Composable
-fun PersonalizarPizzaScreen(modifier: Modifier = Modifier) {
+fun PersonalizarPizzaScreen(
+    modifier: Modifier = Modifier,
+    nomePizza: String,
+    onAdicionar: (String) -> Unit
+) {
 
     // remember + mutableStateOf = variavel que a tela "lembra" e observa.
     // Serve so para o componente se destacar quando a pessoa toca nele.
@@ -94,8 +101,9 @@ fun PersonalizarPizzaScreen(modifier: Modifier = Modifier) {
                 }
 
                 // ----- NOME DA PIZZA -----
+                // Vem da rota, nao e mais um texto fixo.
                 Text(
-                    text = "Pizza calabresa",
+                    text = nomePizza,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                     color = AzulFatia
@@ -170,7 +178,7 @@ fun PersonalizarPizzaScreen(modifier: Modifier = Modifier) {
 
                 // ----- BOTAO ADICIONAR -----
                 Button(
-                    onClick = { },
+                    onClick = { onAdicionar(nomePizza) },
                     colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
@@ -220,6 +228,10 @@ fun ChipTamanho(
 @Composable
 fun PersonalizarPizzaScreenPreview() {
     FatiaTheme {
-        PersonalizarPizzaScreen(Modifier.fillMaxSize())
+        PersonalizarPizzaScreen(
+            modifier = Modifier.fillMaxSize(),
+            nomePizza = "Pizza calabresa",
+            onAdicionar = {}
+        )
     }
 }

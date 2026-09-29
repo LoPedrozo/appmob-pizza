@@ -5,18 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.example.fatia.ui.screens.CardapioScreen
-import com.example.fatia.ui.screens.ConfirmacaoScreen
-import com.example.fatia.ui.screens.LoginScreen
-import com.example.fatia.ui.screens.PersonalizarPizzaScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.fatia.navigation.AppNavigation
 import com.example.fatia.ui.theme.FatiaTheme
 
 // Activity principal: e a primeira coisa que abre quando o app inicia.
@@ -33,54 +24,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             // Aplica o tema do app (cores e textos do Material 3).
             FatiaTheme {
-                // Scaffold e a estrutura basica da tela.
-                // innerPadding e o espaco das barras do sistema.
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // TELA 3 - mostrando a tela de personalizar pizza para
-                    // apresentar esta etapa do trabalho.
-                    // Para voltar ao fluxo completo do app (login -> cardapio
-                    // -> confirmacao), troque a linha abaixo por:
-                    // AppFatia(Modifier.padding(innerPadding))
-                    PersonalizarPizzaScreen(Modifier.padding(innerPadding))
-                }
+                // Na Parte 1 a troca de telas era feita aqui, com uma
+                // variavel telaAtual e um when. Na Parte 2 quem faz esse
+                // papel e o NavHost, dentro do AppNavigation.
+                //
+                // rememberNavController cria o controlador da navegacao e
+                // faz o Compose lembrar dele entre as recomposicoes.
+                val navController = rememberNavController()
+
+                AppNavigation(
+                    navController = navController,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
-    }
-}
-
-// Aqui decidimos QUAL tela aparece.
-// Guardamos o nome da tela atual numa variavel de estado e usamos when
-// para escolher. Quando a variavel muda, o Compose redesenha a tela.
-@Composable
-fun AppFatia(modifier: Modifier = Modifier) {
-
-    // remember + mutableStateOf = variavel que a tela "lembra" e observa.
-    // Comeca na tela de login.
-    var telaAtual by remember { mutableStateOf("login") }
-
-    // Guarda o nome da pizza escolhida no cardapio, para mostrar
-    // depois na tela de confirmacao.
-    var pizzaEscolhida by remember { mutableStateOf("") }
-
-    when (telaAtual) {
-        // Cada tela recebe uma funcao (lambda) que diz para onde ir depois.
-        "login" -> LoginScreen(
-            modifier = modifier,
-            onEntrar = { telaAtual = "cardapio" }
-        )
-        // O cardapio devolve o nome da pizza clicada. Guardamos esse nome
-        // e so depois trocamos de tela.
-        "cardapio" -> CardapioScreen(
-            modifier = modifier,
-            onPizzaEscolhida = { nome ->
-                pizzaEscolhida = nome
-                telaAtual = "confirmacao"
-            }
-        )
-        "confirmacao" -> ConfirmacaoScreen(
-            modifier = modifier,
-            nomePizza = pizzaEscolhida,
-            onVoltarClick = { telaAtual = "cardapio" }
-        )
     }
 }
