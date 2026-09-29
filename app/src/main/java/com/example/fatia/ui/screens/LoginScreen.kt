@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,7 +80,17 @@ fun LoginScreen(
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        // statusBarsPadding empurra o conteudo para baixo da barra de
+        // status. Estas duas telas precisam disso na mao porque nao tem
+        // Scaffold (elas nao podem mostrar o menu), entao nao recebem o
+        // innerPadding de ninguem.
+        // Fica na Column, e nao no Box, para o fundo azul continuar
+        // preenchendo a tela inteira ate o topo.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
 
             // Barra superior azul escuro do mockup.
             Box(

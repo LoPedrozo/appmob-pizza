@@ -33,12 +33,19 @@ fun Menu(navController: NavHostController) {
             TextButton(onClick = { navController.navigate(Cardapio) }) {
                 Text(text = "Cardápio", color = Color.White)
             }
-            // A rota Personalizar exige um argumento, entao passamos
-            // uma pizza de exemplo quando o atalho vem do menu.
-            TextButton(onClick = { navController.navigate(Personalizar("Pizza calabresa")) }) {
+            // A rota Personalizar e uma data class, ou seja, ela exige um
+            // argumento. Por isso o menu precisa informar uma pizza aqui.
+            // O nome e o mesmo que esta na lista do cardapio.
+            TextButton(onClick = { navController.navigate(Personalizar("Calabresa")) }) {
                 Text(text = "Personalizar", color = Color.White)
             }
-            TextButton(onClick = { navController.navigate(Login) }) {
+            TextButton(onClick = {
+                // Login e a startDestination, ou seja, esta no fundo da pilha.
+                // popBackStack volta ate ela e descarta tudo o que estava por
+                // cima. inclusive = false quer dizer "nao remove a propria
+                // tela de login".
+                navController.popBackStack(route = Login, inclusive = false)
+            }) {
                 Text(text = "Sair", color = Color.White)
             }
         }
