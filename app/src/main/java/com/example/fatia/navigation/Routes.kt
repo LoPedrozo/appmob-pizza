@@ -17,6 +17,9 @@ import kotlinx.serialization.Serializable
 data object Login
 
 @Serializable
+data object Cadastro
+
+@Serializable
 data object Cardapio
 
 // data class = rota COM argumento. O valor viaja junto com a rota,

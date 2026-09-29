@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.fatia.ui.screens.CadastroScreen
 import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
 import com.example.fatia.ui.screens.LoginScreen
@@ -38,7 +39,18 @@ fun AppNavigation(
         // ----- LOGIN: sem menu -----
         composable<Login> {
             LoginScreen(
-                onEntrar = { navController.navigate(Cardapio) }
+                onEntrar = { navController.navigate(Cardapio) },
+                onIrParaCadastro = { navController.navigate(Cadastro) }
+            )
+        }
+
+        // ----- CADASTRO: sem menu -----
+        composable<Cadastro> {
+            CadastroScreen(
+                // Nos dois casos voltamos para a tela anterior, que e o
+                // login, tirando o cadastro da pilha de navegacao.
+                onCadastrado = { navController.popBackStack() },
+                onVoltarParaLogin = { navController.popBackStack() }
             )
         }
 
