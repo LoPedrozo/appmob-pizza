@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.android.application)
     // Plugin necessario para o Jetpack Compose funcionar.
     alias(libs.plugins.kotlin.compose)
+    // Plugin de serializacao, usado pelas rotas marcadas com @Serializable.
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -64,6 +66,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     // Componentes visuais do Material Design 3 (Text, Surface...).
     implementation(libs.androidx.material3)
+    // Navegacao entre telas com NavHost e rotas.
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    // Transforma os objetos das rotas em dados que o NavHost consegue guardar.
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.+")
+    // Icones extras do Material.
+    implementation(libs.androidx.compose.material.icons.extended)
     // Ferramenta que desenha o @Preview no Android Studio (so no modo debug).
     debugImplementation(libs.androidx.ui.tooling)
 }

@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -40,29 +38,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fatia.dados.RepositorioUsuarios
+import com.example.fatia.dados.Usuario
 import com.example.fatia.ui.theme.AzulEscuroFatia
 import com.example.fatia.ui.theme.AzulFatia
 import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.theme.FatiaTheme
 
-// TELA 1 - LOGIN
-// Confere o e-mail e a senha na lista de usuarios do RepositorioUsuarios.
+// TELA DE CADASTRO
 //
-// A tela nao conhece o navController: ela so avisa o que aconteceu
-// chamando as funcoes que recebeu de fora.
-// onEntrar = chamada quando o login deu certo.
-// onIrParaCadastro = chamada no texto "Criar conta".
+// Mesmo visual da tela de login. Assim como ela, esta tela nao conhece o
+// navController: ela so avisa o que aconteceu chamando as funcoes que
+// recebeu de fora.
+//
+// onCadastrado = chamada quando o cadastro deu certo.
+// onVoltarParaLogin = chamada no texto "Ja tenho conta".
 @Composable
-fun LoginScreen(
+fun CadastroScreen(
     modifier: Modifier = Modifier,
-    onEntrar: () -> Unit,
-    onIrParaCadastro: () -> Unit
+    onCadastrado: () -> Unit,
+    onVoltarParaLogin: () -> Unit
 ) {
     // remember + mutableStateOf = a tela "lembra" o que foi digitado.
     // Sem isso o texto sumiria a cada recomposicao da tela.
+    var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
+    var confirmarSenha by remember { mutableStateOf("") }
 
     // Guarda a mensagem de erro. Vazio = nenhum erro para mostrar.
     var erro by remember { mutableStateOf("") }
@@ -92,7 +94,7 @@ fun LoginScreen(
                 .statusBarsPadding()
         ) {
 
-            // Barra superior azul escuro do mockup.
+            // Barra superior azul escuro, igual a da tela de login.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -119,23 +121,32 @@ fun LoginScreen(
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Logo: circulo coral com a letra "F" branca no meio.
+                    // Mesmo logo da tela de login (funcao que ja existe
+                    // no arquivo LoginScreen.kt, no mesmo pacote).
                     LogoFatia()
 
                     Text(
-                        text = "Fatia",
+                        text = "Criar conta",
                         color = AzulFatia,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineLarge
                     )
 
                     Text(
-                        text = "Peça sua pizza favorita",
+                        text = "Preencha os seus dados",
                         color = CinzaFatia,
                         style = MaterialTheme.typography.bodyMedium
                     )
 
-                    // Campo de e-mail (teclado com @ e ponto).
+                    OutlinedTextField(
+                        value = nome,
+                        onValueChange = { nome = it },
+                        label = { Text("Nome") },
+                        singleLine = true,
+                        colors = coresInputs,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -146,11 +157,22 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Campo de senha: PasswordVisualTransformation esconde o texto.
+                    // PasswordVisualTransformation troca as letras por pontinhos.
                     OutlinedTextField(
                         value = senha,
                         onValueChange = { senha = it },
                         label = { Text("Senha") },
+                        singleLine = true,
+                        colors = coresInputs,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    OutlinedTextField(
+                        value = confirmarSenha,
+                        onValueChange = { confirmarSenha = it },
+                        label = { Text("Confirmar senha") },
                         singleLine = true,
                         colors = coresInputs,
                         visualTransformation = PasswordVisualTransformation(),
@@ -168,17 +190,26 @@ fun LoginScreen(
                         )
                     }
 
-                    // Botao principal, largura total e fundo coral.
+                    // enabled = false deixa o botao apagado e sem clique.
+                    // Ele so liga quando o formulario esta preenchido certo.
                     Button(
                         onClick = {
-                            // Pergunta ao repositorio se esse e-mail e essa
-                            // senha existem na lista de usuarios.
-                            if (RepositorioUsuarios.autenticar(email, senha)) {
-                                onEntrar()
+                            val novoUsuario = Usuario(
+                                nome = nome,
+                                email = email,
+                                senha = senha
+                            )
+                            // cadastrar devolve false quando o e-mail ja existe.
+                            if (RepositorioUsuarios.cadastrar(novoUsuario)) {
+                                onCadastrado()
                             } else {
-                                erro = "E-mail ou senha inválidos"
+                                erro = "Este e-mail já está cadastrado"
                             }
                         },
+                        enabled = nome.isNotEmpty() &&
+                                email.isNotEmpty() &&
+                                senha.length >= 4 &&
+                                senha == confirmarSenha,
                         colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
@@ -186,21 +217,21 @@ fun LoginScreen(
                             .height(52.dp)
                     ) {
                         Text(
-                            text = "Entrar",
+                            text = "Cadastrar",
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }
 
-                    // "Criar conta": leva para a tela de cadastro.
+                    // Texto clicavel que volta para a tela de login.
                     Text(
-                        text = "Criar conta",
+                        text = "Já tenho conta",
                         color = AzulFatia,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onIrParaCadastro() }
+                            .clickable { onVoltarParaLogin() }
                             .padding(8.dp)
                     )
                 }
@@ -209,31 +240,13 @@ fun LoginScreen(
     }
 }
 
-// Composable pequeno so para o logo, para nao deixar a tela gigante.
-@Composable
-fun LogoFatia(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(64.dp)
-            .background(CoralFatia, CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "F",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun CadastroScreenPreview() {
     FatiaTheme {
-        LoginScreen(
-            onEntrar = {},
-            onIrParaCadastro = {}
+        CadastroScreen(
+            onCadastrado = {},
+            onVoltarParaLogin = {}
         )
     }
 }
