@@ -45,17 +45,6 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.AuthViewModel
 
-// TELA 1 - LOGIN
-//
-// Quem confere o e-mail e a senha no banco e o AuthViewModel. A tela so
-// mostra os campos e pergunta para ele se pode entrar (MVVM: a tela nunca
-// fala com o DAO nem com o banco).
-//
-// A tela tambem nao conhece o navController: ela so avisa o que aconteceu
-// chamando as funcoes que recebeu de fora.
-// viewModel = recebido do AppNavigation, quem fala com o banco.
-// onEntrar = chamada quando o login deu certo.
-// onIrParaCadastro = chamada no texto "Criar conta".
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -63,47 +52,30 @@ fun LoginScreen(
     onEntrar: () -> Unit,
     onIrParaCadastro: () -> Unit
 ) {
-    // remember + mutableStateOf = a tela "lembra" o que foi digitado.
-    // Sem isso o texto sumiria a cada recomposicao da tela.
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
 
-    // A mensagem de erro NAO fica mais na tela: ela vive no viewModel,
-    // porque e ele quem descobre que o login deu errado.
-
-    // LaunchedEffect roda o bloco uma vez, quando a tela aparece.
-    // Unit como chave = "nao repita quando a tela se redesenhar".
-    // Serve para limpar um erro antigo que ficou da ultima vez.
     LaunchedEffect(Unit) {
         viewModel.limparMensagem()
     }
 
-    // Cores das bordas dos campos de texto (como foi feito em aula).
     val coresInputs = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
         disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
     )
 
-    // Box de fora: pinta a tela inteira de azul.
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        // statusBarsPadding empurra o conteudo para baixo da barra de
-        // status. Estas duas telas precisam disso na mao porque nao tem
-        // Scaffold (elas nao podem mostrar o menu), entao nao recebem o
-        // innerPadding de ninguem.
-        // Fica na Column, e nao no Box, para o fundo azul continuar
-        // preenchendo a tela inteira ate o topo.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
 
-            // Barra superior azul escuro do mockup.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +83,6 @@ fun LoginScreen(
                     .background(AzulEscuroFatia)
             )
 
-            // Cartao branco arredondado, ocupando o resto da tela.
             Card(
                 modifier = Modifier
                     .fillMaxSize()
@@ -119,7 +90,6 @@ fun LoginScreen(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                // verticalScroll deixa rolar quando o teclado abre.
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -130,7 +100,6 @@ fun LoginScreen(
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Logo: circulo coral com a letra "F" branca no meio.
                     LogoFatia()
 
                     Text(
@@ -146,7 +115,6 @@ fun LoginScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
 
-                    // Campo de e-mail (teclado com @ e ponto).
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -157,7 +125,6 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Campo de senha: PasswordVisualTransformation esconde o texto.
                     OutlinedTextField(
                         value = senha,
                         onValueChange = { senha = it },
@@ -169,7 +136,6 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // A mensagem de erro so aparece quando existe erro.
                     if (viewModel.mensagem.isNotEmpty()) {
                         Text(
                             text = viewModel.mensagem,
@@ -179,13 +145,8 @@ fun LoginScreen(
                         )
                     }
 
-                    // Botao principal, largura total e fundo coral.
                     Button(
                         onClick = {
-                            // O viewModel procura o e-mail no banco e confere
-                            // a senha. Quando da certo ele tambem abre a
-                            // sessao e devolve true; o erro ja fica guardado
-                            // no proprio viewModel.
                             if (viewModel.login(email, senha)) {
                                 onEntrar()
                             }
@@ -203,7 +164,6 @@ fun LoginScreen(
                         )
                     }
 
-                    // "Criar conta": leva para a tela de cadastro.
                     Text(
                         text = "Criar conta",
                         color = AzulFatia,
@@ -220,7 +180,6 @@ fun LoginScreen(
     }
 }
 
-// Composable pequeno so para o logo, para nao deixar a tela gigante.
 @Composable
 fun LogoFatia(modifier: Modifier = Modifier) {
     Box(
@@ -237,7 +196,3 @@ fun LogoFatia(modifier: Modifier = Modifier) {
         )
     }
 }
-
-// Esta tela nao tem mais @Preview porque agora ela precisa de um
-// AuthViewModel, e o viewModel so existe quando o app esta rodando
-// de verdade (ele e criado no AppNavigation).

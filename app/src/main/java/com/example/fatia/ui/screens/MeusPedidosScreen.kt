@@ -29,27 +29,16 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 
-// TELA - MEUS PEDIDOS (o "Listar" e o "Deletar" do CRUD de pedidos)
-//
-// Mostra so os pedidos de quem esta logado: quem filtra pelo usuario da
-// sessao e o viewModel, no listar().
-//
-// onAlterar = chamada com o id do pedido, para abrir a tela de editar.
 @Composable
 fun MeusPedidosScreen(
     modifier: Modifier = Modifier,
     viewModel: PedidoViewModel,
     onAlterar: (Long) -> Unit
 ) {
-    // LaunchedEffect(Unit) roda quando a tela aparece. Como esta tela sai
-    // da tela enquanto a de editar esta aberta, ao voltar ele roda de novo
-    // e a lista ja vem atualizada do banco.
     LaunchedEffect(Unit) {
         viewModel.listar()
     }
 
-    // Guarda o pedido que a pessoa pediu para cancelar.
-    // null = nenhum, ou seja, o AlertDialog fica escondido.
     var pedidoParaCancelar by remember { mutableStateOf<Pedido?>(null) }
 
     Column(
@@ -63,19 +52,15 @@ fun MeusPedidosScreen(
             text = "Meus pedidos",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleLarge,
-            // secondary = azul do mockup, usado nos titulos
             color = MaterialTheme.colorScheme.secondary
         )
 
         if (viewModel.pedidos.isEmpty()) {
-            // Sem este aviso a tela ficaria so com um espaco branco.
             Text(
                 text = "Você ainda não fez nenhum pedido",
                 color = CinzaFatia
             )
         } else {
-            // LazyColumn e uma lista que rola na vertical e so desenha
-            // os itens que estao aparecendo na tela.
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -83,8 +68,6 @@ fun MeusPedidosScreen(
                     CardDoPedido(
                         pedido = pedido,
                         onAlterar = onAlterar,
-                        // Ainda nao cancela: so marca qual pedido vai
-                        // aparecer na pergunta de confirmacao.
                         onCancelar = { pedidoParaCancelar = pedido }
                     )
                 }
@@ -92,20 +75,14 @@ fun MeusPedidosScreen(
         }
     }
 
-    // ----- CONFIRMACAO DO CANCELAMENTO (o "Deletar" do CRUD) -----
-    // Copiamos para uma variavel local porque assim o Kotlin entende que
-    // dentro do if ela nao e mais nula e deixa usar o .id.
     val pedidoDoDialogo = pedidoParaCancelar
     if (pedidoDoDialogo != null) {
         AlertDialog(
-            // Chamado quando a pessoa toca fora do dialogo: nao apaga nada.
             onDismissRequest = { pedidoParaCancelar = null },
             title = { Text("Cancelar pedido") },
             text = { Text("Quer cancelar o pedido #${pedidoDoDialogo.id}?") },
             confirmButton = {
                 TextButton(onClick = {
-                    // Agora sim: o viewModel apaga no banco e pede a lista
-                    // de novo. Depois fechamos o dialogo.
                     viewModel.excluir(pedidoDoDialogo.id)
                     pedidoParaCancelar = null
                 }) {
@@ -121,7 +98,6 @@ fun MeusPedidosScreen(
     }
 }
 
-// Card de um pedido: o numero, o resumo e os dois botoes.
 @Composable
 fun CardDoPedido(
     pedido: Pedido,
@@ -135,31 +111,25 @@ fun CardDoPedido(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // O numero do pedido e o id que o banco gerou.
             Text(
                 text = "Pedido #${pedido.id}",
                 fontWeight = FontWeight.Bold
             )
 
-            // LinhaDoResumo e a mesma funcao usada na tela de confirmacao
-            // (ela esta no arquivo ConfirmacaoScreen.kt, mesmo pacote).
             LinhaDoResumo(titulo = "Pizza", valor = pedido.pizzaNome)
             LinhaDoResumo(titulo = "Tamanho", valor = pedido.tamanho)
             LinhaDoResumo(
                 titulo = "Borda recheada",
-                // No banco borda e 0 ou 1; aqui viramos texto.
                 valor = if (pedido.borda) "Sim" else "Não"
             )
             LinhaDoResumo(titulo = "Quantidade", valor = "${pedido.quantidade}")
             LinhaDoResumo(titulo = "Total", valor = "R$ ${pedido.total}")
 
-            // Linha dos botoes do card.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Manda o id para a tela de editar saber qual pedido abrir.
                 Button(onClick = { onAlterar(pedido.id) }) {
                     Text("Alterar")
                 }
@@ -170,6 +140,3 @@ fun CardDoPedido(
         }
     }
 }
-
-// Sem @Preview: esta tela precisa de um PedidoViewModel, que so existe
-// quando o app esta rodando (ele e criado no AppNavigation).

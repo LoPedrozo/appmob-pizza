@@ -43,17 +43,6 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.AuthViewModel
 
-// TELA DE CADASTRO
-//
-// Mesmo visual da tela de login. Quem salva o usuario no banco e o
-// AuthViewModel; a tela so junta o que foi digitado e manda para ele.
-//
-// Assim como o login, esta tela nao conhece o navController: ela so avisa o
-// que aconteceu chamando as funcoes que recebeu de fora.
-//
-// viewModel = recebido do AppNavigation, quem fala com o banco.
-// onCadastrado = chamada quando o cadastro deu certo.
-// onVoltarParaLogin = chamada no texto "Ja tenho conta".
 @Composable
 fun CadastroScreen(
     modifier: Modifier = Modifier,
@@ -61,49 +50,32 @@ fun CadastroScreen(
     onCadastrado: () -> Unit,
     onVoltarParaLogin: () -> Unit
 ) {
-    // remember + mutableStateOf = a tela "lembra" o que foi digitado.
-    // Sem isso o texto sumiria a cada recomposicao da tela.
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
 
-    // A mensagem de erro vem do viewModel, porque e ele quem descobre
-    // que aquele e-mail ja esta cadastrado no banco.
-
-    // LaunchedEffect roda o bloco uma vez, quando a tela aparece.
-    // Unit como chave = "nao repita quando a tela se redesenhar".
-    // Serve para limpar um erro antigo que ficou da ultima vez.
     LaunchedEffect(Unit) {
         viewModel.limparMensagem()
     }
 
-    // Cores das bordas dos campos de texto (como foi feito em aula).
     val coresInputs = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
         disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
     )
 
-    // Box de fora: pinta a tela inteira de azul.
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        // statusBarsPadding empurra o conteudo para baixo da barra de
-        // status. Estas duas telas precisam disso na mao porque nao tem
-        // Scaffold (elas nao podem mostrar o menu), entao nao recebem o
-        // innerPadding de ninguem.
-        // Fica na Column, e nao no Box, para o fundo azul continuar
-        // preenchendo a tela inteira ate o topo.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
 
-            // Barra superior azul escuro, igual a da tela de login.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,7 +83,6 @@ fun CadastroScreen(
                     .background(AzulEscuroFatia)
             )
 
-            // Cartao branco arredondado, ocupando o resto da tela.
             Card(
                 modifier = Modifier
                     .fillMaxSize()
@@ -119,7 +90,6 @@ fun CadastroScreen(
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                // verticalScroll deixa rolar quando o teclado abre.
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -130,8 +100,6 @@ fun CadastroScreen(
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Mesmo logo da tela de login (funcao que ja existe
-                    // no arquivo LoginScreen.kt, no mesmo pacote).
                     LogoFatia()
 
                     Text(
@@ -166,7 +134,6 @@ fun CadastroScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // PasswordVisualTransformation troca as letras por pontinhos.
                     OutlinedTextField(
                         value = senha,
                         onValueChange = { senha = it },
@@ -189,7 +156,6 @@ fun CadastroScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // A mensagem de erro so aparece quando existe erro.
                     if (viewModel.mensagem.isNotEmpty()) {
                         Text(
                             text = viewModel.mensagem,
@@ -199,13 +165,8 @@ fun CadastroScreen(
                         )
                     }
 
-                    // enabled = false deixa o botao apagado e sem clique.
-                    // Ele so liga quando o formulario esta preenchido certo.
                     Button(
                         onClick = {
-                            // O viewModel monta o Usuario e manda o DAO salvar
-                            // no banco. Devolve false quando o e-mail ja existe
-                            // e nesse caso a mensagem dele aparece acima.
                             if (viewModel.cadastrar(nome, email, senha)) {
                                 onCadastrado()
                             }
@@ -227,7 +188,6 @@ fun CadastroScreen(
                         )
                     }
 
-                    // Texto clicavel que volta para a tela de login.
                     Text(
                         text = "Já tenho conta",
                         color = AzulFatia,
@@ -243,6 +203,3 @@ fun CadastroScreen(
         }
     }
 }
-
-// Sem @Preview pelo mesmo motivo da tela de login: agora ela precisa de um
-// AuthViewModel, que so existe com o app rodando.

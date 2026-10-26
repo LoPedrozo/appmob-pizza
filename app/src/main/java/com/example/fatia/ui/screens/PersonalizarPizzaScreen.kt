@@ -32,21 +32,8 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 
-// Cinza do chip de tamanho quando ele NAO esta selecionado.
-// As outras cores da tela (azul, coral e amarelo) ja existem no
-// arquivo ui/theme/Color.kt e sao importadas ali em cima.
-// O formato e 0xAARRGGBB: AA = transparencia, depois vermelho, verde e azul.
 val CinzaChipFatia = Color(0xFFF0F0F0)
 
-// TELA 3 - PERSONALIZAR PIZZA (o "Criar" do CRUD de pedidos)
-//
-// Agora a tela nao recebe mais o nome da pizza: recebe o ID. Com o id o
-// viewModel busca o nome e o preco no banco, e o preco do botao e calculado
-// de verdade (tamanho, borda e quantidade).
-//
-// pizzaId = id que veio como argumento da rota Personalizar.
-// viewModel = quem fala com o banco e faz a conta do total.
-// onPedidoCriado = chamada com o id do pedido que acabou de ser salvo.
 @Composable
 fun PersonalizarPizzaScreen(
     modifier: Modifier = Modifier,
@@ -54,19 +41,15 @@ fun PersonalizarPizzaScreen(
     viewModel: PedidoViewModel,
     onPedidoCriado: (Long) -> Unit
 ) {
-    // Busca a pizza quando a tela aparece. A chave e o pizzaId: se a pessoa
-    // escolher outra pizza, o bloco roda de novo e carrega a nova.
     LaunchedEffect(pizzaId) {
         viewModel.carregarPizza(pizzaId)
     }
 
-    // Box de fora: pinta a tela inteira de azul.
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        // Cartao branco arredondado, ocupando a maior parte da tela.
         Card(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,9 +64,6 @@ fun PersonalizarPizzaScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                // ----- FOTO DA PIZZA (placeholder) -----
-                // Nao e imagem de verdade: e so um retangulo amarelo
-                // com o desenho da pizza no meio.
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -97,8 +77,6 @@ fun PersonalizarPizzaScreen(
                     )
                 }
 
-                // ----- NOME E PRECO DA PIZZA -----
-                // Vem do banco, pelo viewModel.
                 Text(
                     text = viewModel.pizzaNome,
                     fontWeight = FontWeight.Bold,
@@ -111,8 +89,6 @@ fun PersonalizarPizzaScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                // ----- SELETOR DE TAMANHO (P / M / G) -----
-                // forEach percorre a lista e desenha um chip para cada texto.
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -120,22 +96,15 @@ fun PersonalizarPizzaScreen(
                     listOf("P", "M", "G").forEach { tamanho ->
                         ChipTamanho(
                             texto = tamanho,
-                            // So fica amarelo o chip que estiver selecionado.
                             selecionado = tamanho == viewModel.tamanho,
-                            // Agora o clique muda o tamanho no viewModel, e
-                            // por isso o total do botao muda na hora.
                             onClick = { viewModel.tamanho = tamanho },
-                            // weight(1f) faz os tres chips dividirem a linha
-                            // em partes iguais.
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
 
-                // ----- BORDA RECHEADA -----
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    // SpaceBetween joga um item para cada ponta da linha.
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -146,7 +115,6 @@ fun PersonalizarPizzaScreen(
                     )
                 }
 
-                // ----- QUANTIDADE -----
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -154,13 +122,10 @@ fun PersonalizarPizzaScreen(
                 ) {
                     Text(text = "Quantidade")
 
-                    // Linha da direita: - 1 +
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Os sinais agora funcionam: quem controla o limite
-                        // (de 1 a 10) e o viewModel.
                         Text(
                             text = "–",
                             fontWeight = FontWeight.Bold,
@@ -177,7 +142,6 @@ fun PersonalizarPizzaScreen(
                     }
                 }
 
-                // A mensagem de erro so aparece quando existe erro.
                 if (viewModel.mensagem.isNotEmpty()) {
                     Text(
                         text = viewModel.mensagem,
@@ -185,18 +149,11 @@ fun PersonalizarPizzaScreen(
                     )
                 }
 
-                // Spacer com weight(1f) ocupa todo o espaco que sobra
-                // e empurra o botao para o fim do cartao.
                 Spacer(modifier = Modifier.weight(1f))
 
-                // ----- BOTAO ADICIONAR -----
                 Button(
                     onClick = {
-                        // O viewModel monta o Pedido (com o usuario da sessao
-                        // e o total calculado) e manda o DAO salvar.
                         val id = viewModel.criarPedido()
-                        // Id maior que 0 = salvou. Avisamos quem chamou a tela
-                        // passando o id, para a confirmacao buscar o pedido.
                         if (id > 0) {
                             onPedidoCriado(id)
                         }
@@ -207,8 +164,6 @@ fun PersonalizarPizzaScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
-                    // O total vem da conta do viewModel e muda sozinho
-                    // quando o tamanho, a borda ou a quantidade mudam.
                     Text(
                         text = "Adicionar · R$ ${viewModel.calcularTotal()}",
                         color = Color.White,
@@ -220,10 +175,6 @@ fun PersonalizarPizzaScreen(
     }
 }
 
-// Um chip do seletor de tamanho.
-// Foi separado numa funcao propria para nao repetir o mesmo codigo tres
-// vezes. A tela de editar o pedido tambem usa esta mesma funcao.
-// selecionado = true deixa o fundo amarelo; false deixa cinza.
 @Composable
 fun ChipTamanho(
     texto: String,
@@ -248,6 +199,3 @@ fun ChipTamanho(
         )
     }
 }
-
-// Sem @Preview: esta tela agora precisa de um PedidoViewModel, que so
-// existe quando o app esta rodando (ele e criado no AppNavigation).

@@ -34,17 +34,6 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PizzaViewModel
 
-// FORMULARIO DA PIZZA (o "Criar" e o "Alterar" do CRUD de pizzas)
-//
-// A MESMA tela serve para cadastrar e para editar. Quem decide e o pizzaId:
-//   pizzaId == 0  -> pizza nova (campos vazios)
-//   pizzaId  > 0  -> editar aquela pizza (campos preenchidos pelo banco)
-//
-// Os campos ficam no viewModel (e nao em remember na tela) porque e ele
-// quem precisa deles para montar a Pizza e mandar o DAO salvar.
-//
-// onSalvo = chamada quando gravou, para voltar ao cardapio.
-// onVoltar = chamada no texto "Cancelar".
 @Composable
 fun PizzaFormScreen(
     modifier: Modifier = Modifier,
@@ -53,34 +42,27 @@ fun PizzaFormScreen(
     onSalvo: () -> Unit,
     onVoltar: () -> Unit
 ) {
-    // Prepara os campos quando a tela aparece.
-    // A chave e o pizzaId: se abrirmos o formulario de outra pizza, o bloco
-    // roda de novo e carrega os dados daquela outra.
     LaunchedEffect(pizzaId) {
         viewModel.carregar(pizzaId)
     }
 
-    // O titulo muda junto com o que a tela esta fazendo.
     val titulo = if (pizzaId == 0L) {
         "Nova pizza"
     } else {
         "Editar pizza"
     }
 
-    // Cores das bordas dos campos de texto (as mesmas das outras telas).
     val coresInputs = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
         disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
     )
 
-    // Box de fora: pinta a tela inteira de azul, igual as outras.
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        // Cartao branco arredondado por cima do azul.
         Card(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,7 +70,6 @@ fun PizzaFormScreen(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            // verticalScroll deixa rolar quando o teclado abre.
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -110,9 +91,6 @@ fun PizzaFormScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                // Os tres campos estao ligados DIRETO no viewModel:
-                // value le o que esta la e onValueChange grava o que foi
-                // digitado. Por isso nao precisamos de remember aqui.
                 OutlinedTextField(
                     value = viewModel.nome,
                     onValueChange = { viewModel.nome = it },
@@ -130,9 +108,6 @@ fun PizzaFormScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // KeyboardType.Number abre o teclado de numeros no celular.
-                // Mesmo assim o valor continua String: quem transforma em
-                // numero e o viewModel, com o toIntOrNull().
                 OutlinedTextField(
                     value = viewModel.preco,
                     onValueChange = { viewModel.preco = it },
@@ -143,7 +118,6 @@ fun PizzaFormScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // A mensagem de erro so aparece quando existe erro.
                 if (viewModel.mensagem.isNotEmpty()) {
                     Text(
                         text = viewModel.mensagem,
@@ -153,13 +127,8 @@ fun PizzaFormScreen(
                     )
                 }
 
-                // ----- BOTAO SALVAR -----
                 Button(
                     onClick = {
-                        // O viewModel confere os campos e grava no banco:
-                        // insert quando o id e 0, update quando ja existe.
-                        // Devolve false quando algo esta errado, e nesse caso
-                        // a mensagem dele aparece acima.
                         if (viewModel.salvar(pizzaId)) {
                             onSalvo()
                         }
@@ -177,7 +146,6 @@ fun PizzaFormScreen(
                     )
                 }
 
-                // Texto clicavel que volta para o cardapio sem salvar.
                 Text(
                     text = "Cancelar",
                     color = AzulFatia,
@@ -192,6 +160,3 @@ fun PizzaFormScreen(
         }
     }
 }
-
-// Sem @Preview: esta tela precisa de um PizzaViewModel, que so existe
-// quando o app esta rodando (ele e criado no AppNavigation).

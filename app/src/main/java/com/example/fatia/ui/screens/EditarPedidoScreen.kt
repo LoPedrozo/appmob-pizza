@@ -31,14 +31,6 @@ import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 
-// TELA - EDITAR PEDIDO (o "Alterar" do CRUD de pedidos)
-//
-// Mesmos controles da tela de personalizar (chips de tamanho, borda e
-// quantidade), mas em cima de um pedido que JA esta no banco. A pizza nao
-// muda: para trocar de pizza a pessoa faz outro pedido.
-//
-// pedidoId = id que veio como argumento da rota EditarPedido.
-// onSalvo = chamada depois de gravar, para voltar para a lista.
 @Composable
 fun EditarPedidoScreen(
     modifier: Modifier = Modifier,
@@ -46,20 +38,15 @@ fun EditarPedidoScreen(
     viewModel: PedidoViewModel,
     onSalvo: () -> Unit
 ) {
-    // Busca o pedido no banco e preenche os campos do viewModel com o que
-    // foi pedido antes. A chave e o pedidoId: se abrirmos outro pedido, o
-    // bloco roda de novo.
     LaunchedEffect(pedidoId) {
         viewModel.carregarPedido(pedidoId)
     }
 
-    // Box de fora: pinta a tela inteira de azul, igual as outras.
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
-        // Cartao branco arredondado por cima do azul.
         Card(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,7 +68,6 @@ fun EditarPedidoScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
 
-                // Nome e preco base vem do pedido que esta no banco.
                 Text(
                     text = viewModel.pizzaNome,
                     fontWeight = FontWeight.Bold
@@ -92,10 +78,6 @@ fun EditarPedidoScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                // ----- SELETOR DE TAMANHO (P / M / G) -----
-                // ChipTamanho e a mesma funcao usada na tela de personalizar
-                // (ela esta no arquivo PersonalizarPizzaScreen.kt, mesmo
-                // pacote), para nao escrever o chip duas vezes.
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -110,10 +92,8 @@ fun EditarPedidoScreen(
                     }
                 }
 
-                // ----- BORDA RECHEADA -----
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    // SpaceBetween joga um item para cada ponta da linha.
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -124,7 +104,6 @@ fun EditarPedidoScreen(
                     )
                 }
 
-                // ----- QUANTIDADE -----
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -152,7 +131,6 @@ fun EditarPedidoScreen(
                     }
                 }
 
-                // A mensagem de erro so aparece quando existe erro.
                 if (viewModel.mensagem.isNotEmpty()) {
                     Text(
                         text = viewModel.mensagem,
@@ -160,14 +138,10 @@ fun EditarPedidoScreen(
                     )
                 }
 
-                // Spacer com weight(1f) empurra o botao para o fim do cartao.
                 Spacer(modifier = Modifier.weight(1f))
 
-                // ----- BOTAO SALVAR -----
                 Button(
                     onClick = {
-                        // O viewModel monta o pedido alterado (com o total
-                        // recalculado) e manda o DAO fazer o update.
                         if (viewModel.salvarAlteracao(pedidoId)) {
                             onSalvo()
                         }
@@ -178,8 +152,6 @@ fun EditarPedidoScreen(
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
-                    // O total e recalculado na hora, a cada toque nos chips,
-                    // na borda ou na quantidade.
                     Text(
                         text = "Salvar alterações · R$ ${viewModel.calcularTotal()}",
                         color = Color.White,
@@ -190,6 +162,3 @@ fun EditarPedidoScreen(
         }
     }
 }
-
-// Sem @Preview: esta tela precisa de um PedidoViewModel, que so existe
-// quando o app esta rodando (ele e criado no AppNavigation).
