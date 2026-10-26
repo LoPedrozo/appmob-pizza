@@ -17,9 +17,14 @@ import com.example.fatia.auth.SessaoUsuario
 import com.example.fatia.ui.screens.CadastroScreen
 import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
+import com.example.fatia.ui.screens.EditarPedidoScreen
 import com.example.fatia.ui.screens.LoginScreen
+import com.example.fatia.ui.screens.MeusPedidosScreen
 import com.example.fatia.ui.screens.PersonalizarPizzaScreen
+import com.example.fatia.ui.screens.PizzaFormScreen
 import com.example.fatia.ui.viewmodel.AuthViewModel
+import com.example.fatia.ui.viewmodel.PedidoViewModel
+import com.example.fatia.ui.viewmodel.PizzaViewModel
 
 // A NAVEGACAO DO APP
 //
@@ -38,10 +43,13 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    // O viewModel e criado AQUI, uma vez, e depois passado como parametro
-    // para as telas que precisam dele. Assim o login e o cadastro usam o
-    // mesmo AuthViewModel.
+    // Os viewModels sao criados AQUI, uma vez, e depois passados como
+    // parametro para as telas que precisam deles. Assim o login e o cadastro
+    // usam o mesmo AuthViewModel, e o cardapio e o formulario usam o mesmo
+    // PizzaViewModel (e por isso que o formulario pode guardar os campos).
     val authViewModel: AuthViewModel = viewModel()
+    val pizzaViewModel: PizzaViewModel = viewModel()
+    val pedidoViewModel: PedidoViewModel = viewModel()
 
     // ----- CONTROLE DE SESSAO -----
     //
@@ -112,11 +120,37 @@ fun AppNavigation(
             Scaffold(topBar = { Menu(navController) }) { innerPadding ->
                 CardapioScreen(
                     modifier = Modifier.padding(innerPadding),
-                    // O cardapio devolve o nome da pizza clicada e nos
-                    // passamos esse nome como argumento da proxima rota.
-                    onPizzaEscolhida = { nome ->
-                        navController.navigate(Personalizar(nome))
+                    viewModel = pizzaViewModel,
+                    // O cardapio devolve o id da pizza clicada e nos
+                    // passamos esse id como argumento da proxima rota.
+                    onPizzaEscolhida = { id ->
+                        navController.navigate(Personalizar(id))
+                    },
+                    // Pizza nova: abrimos o formulario com o id 0.
+                    onNovaPizza = {
+                        navController.navigate(PizzaForm(0))
+                    },
+                    // Editar: mandamos o id da pizza que foi clicada.
+                    onEditarPizza = { id ->
+                        navController.navigate(PizzaForm(id))
                     }
+                )
+            }
+        }
+
+        // ----- FORMULARIO DA PIZZA: com menu e com argumento -----
+        // E a mesma tela para criar e para alterar; o que muda e o pizzaId.
+        composable<PizzaForm> { back ->
+            val rota = back.toRoute<PizzaForm>()
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                PizzaFormScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    pizzaId = rota.pizzaId,
+                    viewModel = pizzaViewModel,
+                    // Nos dois casos voltamos para o cardapio, que recarrega
+                    // a lista do banco no LaunchedEffect dele.
+                    onSalvo = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
                 )
             }
         }
@@ -129,9 +163,17 @@ fun AppNavigation(
             Scaffold(topBar = { Menu(navController) }) { innerPadding ->
                 PersonalizarPizzaScreen(
                     modifier = Modifier.padding(innerPadding),
-                    nomePizza = rota.nomePizza,
-                    onAdicionar = { nome ->
-                        navController.navigate(Confirmacao(nome))
+                    pizzaId = rota.pizzaId,
+                    viewModel = pedidoViewModel,
+                    // O pedido acabou de ser salvo: levamos o id dele para a
+                    // tela de confirmacao.
+                    onPedidoCriado = { id ->
+                        // popUpTo(Cardapio) tira a tela de personalizar da
+                        // pilha, entao voltar da confirmacao cai no cardapio
+                        // e nao no formulario do pedido que ja foi feito.
+                        navController.navigate(Confirmacao(id)) {
+                            popUpTo(Cardapio)
+                        }
                     }
                 )
             }
@@ -143,10 +185,44 @@ fun AppNavigation(
             Scaffold(topBar = { Menu(navController) }) { innerPadding ->
                 ConfirmacaoScreen(
                     modifier = Modifier.padding(innerPadding),
-                    nomePizza = rota.nomePizza,
-                    // popBackStack tira a tela atual da pilha, ou seja,
-                    // volta para a tela anterior.
-                    onVoltarClick = { navController.popBackStack() }
+                    pedidoId = rota.pedidoId,
+                    viewModel = pedidoViewModel,
+                    onVerPedidos = { navController.navigate(MeusPedidos) },
+                    // popBackStack com uma rota volta ate ela e descarta o
+                    // que estava por cima. inclusive = false quer dizer
+                    // "nao remove o proprio cardapio".
+                    onVoltarCardapio = {
+                        navController.popBackStack(route = Cardapio, inclusive = false)
+                    }
+                )
+            }
+        }
+
+        // ----- MEUS PEDIDOS: com menu -----
+        composable<MeusPedidos> {
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                MeusPedidosScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    viewModel = pedidoViewModel,
+                    // Alterar: mandamos o id do pedido que foi clicado.
+                    onAlterar = { id ->
+                        navController.navigate(EditarPedido(id))
+                    }
+                )
+            }
+        }
+
+        // ----- EDITAR PEDIDO: com menu e com argumento -----
+        composable<EditarPedido> { back ->
+            val rota = back.toRoute<EditarPedido>()
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                EditarPedidoScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    pedidoId = rota.pedidoId,
+                    viewModel = pedidoViewModel,
+                    // Volta para a lista, que recarrega os pedidos do banco
+                    // no LaunchedEffect dela.
+                    onSalvo = { navController.popBackStack() }
                 )
             }
         }

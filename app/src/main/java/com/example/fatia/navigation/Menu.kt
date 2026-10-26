@@ -34,11 +34,11 @@ fun Menu(navController: NavHostController) {
             TextButton(onClick = { navController.navigate(Cardapio) }) {
                 Text(text = "Cardápio", color = Color.White)
             }
-            // A rota Personalizar e uma data class, ou seja, ela exige um
-            // argumento. Por isso o menu precisa informar uma pizza aqui.
-            // O nome e o mesmo que esta na lista do cardapio.
-            TextButton(onClick = { navController.navigate(Personalizar("Calabresa")) }) {
-                Text(text = "Personalizar", color = Color.White)
+            // O botao "Personalizar" saiu do menu: aquela tela precisa de
+            // uma pizza escolhida, e so o cardapio sabe qual e. Agora o
+            // caminho para ela e sempre o botao "Escolher" de um card.
+            TextButton(onClick = { navController.navigate(MeusPedidos) }) {
+                Text(text = "Pedidos", color = Color.White)
             }
             TextButton(onClick = {
                 // Sair = fechar a sessao e voltar para o login.

@@ -5,33 +5,57 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fatia.R
-import com.example.fatia.ui.theme.FatiaTheme
+import com.example.fatia.ui.theme.AzulFatia
+import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.theme.VerdeFatia
+import com.example.fatia.ui.viewmodel.PedidoViewModel
 
-// TELA 3 - CONFIRMACAO DO PEDIDO
-// nomePizza = nome da pizza que o usuario escolheu no cardapio.
-// onVoltarClick = funcao recebida de fora, chamada no botao "Voltar ao inicio".
+// TELA 4 - CONFIRMACAO DO PEDIDO
+//
+// Agora a tela recebe o ID do pedido e pede os dados dele para o banco.
+// Antes o numero do pedido era fixo ("#1042") e so o nome da pizza viajava
+// pela rota.
+//
+// pedidoId = id que veio como argumento da rota Confirmacao.
+// onVerPedidos = botao "Ver meus pedidos".
+// onVoltarCardapio = botao "Voltar ao cardapio".
 @Composable
 fun ConfirmacaoScreen(
     modifier: Modifier = Modifier,
-    nomePizza: String,
-    onVoltarClick: () -> Unit
+    pedidoId: Long,
+    viewModel: PedidoViewModel,
+    onVerPedidos: () -> Unit,
+    onVoltarCardapio: () -> Unit
 ) {
+    // Busca o pedido no banco quando a tela aparece.
+    LaunchedEffect(pedidoId) {
+        viewModel.carregarPedido(pedidoId)
+    }
+
+    // Copiamos para uma variavel local porque assim o Kotlin entende que
+    // dentro do else ela nao e mais nula e deixa usar o .pizzaNome.
+    val pedido = viewModel.pedidoAtual
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -57,39 +81,72 @@ fun ConfirmacaoScreen(
             color = MaterialTheme.colorScheme.secondary
         )
 
-        // Numero do pedido fixo, so para o mockup.
-        Text(text = "Pedido #1042")
+        if (pedido == null) {
+            // Aparece no instante entre a tela abrir e o banco responder,
+            // ou se o pedido tiver sido cancelado.
+            Text(text = "Pedido não encontrado.")
+        } else {
+            // O numero do pedido e o id que o banco gerou no insert.
+            Text(text = "Pedido #${pedido.id}")
 
-        // ----- CARD COM O RESUMO DO PEDIDO -----
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "Resumo do pedido",
-                    fontWeight = FontWeight.Bold
-                )
-                // Cada linha do resumo: titulo na esquerda, valor na direita.
-                LinhaDoResumo(titulo = "Pizza", valor = nomePizza)
-                LinhaDoResumo(titulo = "Tempo estimado", valor = "35 minutos")
-                LinhaDoResumo(titulo = "Entrega", valor = "Delivery em casa")
+            // ----- CARD COM O RESUMO DO PEDIDO -----
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Resumo do pedido",
+                        fontWeight = FontWeight.Bold
+                    )
+                    // Cada linha do resumo: titulo na esquerda, valor na
+                    // direita. Todos os valores vem do banco.
+                    LinhaDoResumo(titulo = "Pizza", valor = pedido.pizzaNome)
+                    LinhaDoResumo(titulo = "Tamanho", valor = pedido.tamanho)
+                    LinhaDoResumo(
+                        titulo = "Borda recheada",
+                        // No banco borda e 0 ou 1; aqui viramos texto.
+                        valor = if (pedido.borda) "Sim" else "Não"
+                    )
+                    LinhaDoResumo(titulo = "Quantidade", valor = "${pedido.quantidade}")
+                    LinhaDoResumo(titulo = "Total", valor = "R$ ${pedido.total}")
+                }
             }
+
+            Text(text = "Estamos preparando o seu pedido.")
         }
 
-        Text(text = "Estamos preparando o seu pedido.")
-
-        // Ao clicar, chama a funcao que veio de fora.
+        // ----- BOTOES -----
         Button(
-            onClick = onVoltarClick,
+            onClick = { onVerPedidos() },
+            colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+        ) {
+            Text(
+                text = "Ver meus pedidos",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        TextButton(
+            onClick = { onVoltarCardapio() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Voltar ao início")
+            Text(
+                text = "Voltar ao cardápio",
+                color = AzulFatia,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
 
 // Uma linha do resumo. Separada numa funcao para nao repetir codigo.
+// A tela "Meus pedidos" tambem usa esta funcao.
 @Composable
 fun LinhaDoResumo(titulo: String, valor: String) {
     Row(
@@ -105,13 +162,5 @@ fun LinhaDoResumo(titulo: String, valor: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ConfirmacaoScreenPreview() {
-    FatiaTheme {
-        ConfirmacaoScreen(
-            nomePizza = "Calabresa",
-            onVoltarClick = {}
-        )
-    }
-}
+// Sem @Preview: esta tela agora precisa de um PedidoViewModel, que so
+// existe quando o app esta rodando (ele e criado no AppNavigation).
