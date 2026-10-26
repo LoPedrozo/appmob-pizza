@@ -5,57 +5,68 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fatia.R
-import com.example.fatia.auth.SessaoUsuario
 import com.example.fatia.data.model.Pizza
-import com.example.fatia.ui.theme.FatiaTheme
+import com.example.fatia.ui.theme.CinzaFatia
+import com.example.fatia.ui.theme.CoralFatia
+import com.example.fatia.ui.viewmodel.PizzaViewModel
 
-// A data class Pizza saiu deste arquivo e foi para data/model/Pizza.kt,
-// porque agora a pizza e uma linha da tabela "pizzas" do banco (o Model
-// do MVVM) e nao um dado que pertence a esta tela.
+// A data class Pizza fica em data/model/Pizza.kt, porque a pizza e uma
+// linha da tabela "pizzas" do banco (o Model do MVVM).
+//
+// A funcao listaDePizzas() foi apagada: as pizzas nao sao mais escritas no
+// codigo, elas vem do banco pelo PizzaViewModel.
 
-// Funcao que devolve a lista de pizzas do cardapio.
-// Ela ainda e fixa (escrita no codigo). Na proxima etapa o cardapio vai
-// pedir estas pizzas para o banco, atraves do PizzaViewModel.
-// id = 0 aqui porque estas pizzas da lista fixa nao vieram do banco, e o
-// id e justamente o numero que o banco da para cada linha.
-fun listaDePizzas(): List<Pizza> {
-    return listOf(
-        Pizza(0, "Calabresa", "Calabresa, cebola e azeitona", 39),
-        Pizza(0, "Mussarela", "Muito queijo mussarela e orégano", 35),
-        Pizza(0, "Portuguesa", "Presunto, ovo, ervilha e cebola", 42),
-        Pizza(0, "Frango com Catupiry", "Frango desfiado com catupiry", 45),
-        Pizza(0, "Quatro Queijos", "Mussarela, provolone, gorgonzola e parmesão", 47)
-    )
-}
-
-// TELA 2 - CARDAPIO
-// onPizzaEscolhida e uma funcao recebida de fora (lambda).
-// Quando o usuario clica em "Escolher", chamamos essa funcao passando
-// o nome da pizza. Quem usa a tela decide o que fazer com esse nome.
+// TELA 2 - CARDAPIO (o "Listar" e o "Deletar" do CRUD de pizzas)
+//
+// viewModel = quem fala com o banco. A tela so mostra viewModel.pizzas.
+// onPizzaEscolhida = botao "Escolher" (vai para a tela de personalizar).
+// onNovaPizza = botao "Nova pizza" (abre o formulario vazio).
+// onEditarPizza = botao "Editar" de um card (abre o formulario preenchido).
 @Composable
 fun CardapioScreen(
     modifier: Modifier = Modifier,
-    onPizzaEscolhida: (String) -> Unit
+    viewModel: PizzaViewModel,
+    onPizzaEscolhida: (String) -> Unit,
+    onNovaPizza: () -> Unit,
+    onEditarPizza: (Long) -> Unit
 ) {
-    // Guarda a lista de pizzas numa variavel para usar mais abaixo.
-    val pizzas = listaDePizzas()
+    // LaunchedEffect(Unit) roda quando a tela aparece. Como o cardapio sai
+    // da tela enquanto o formulario esta aberto, ao voltar ele roda de novo
+    // e a lista ja vem atualizada do banco.
+    LaunchedEffect(Unit) {
+        viewModel.listar()
+    }
+
+    // Guarda a pizza que a pessoa pediu para excluir.
+    // null = nenhuma, ou seja, o AlertDialog de confirmacao fica escondido.
+    var pizzaParaExcluir by remember { mutableStateOf<Pizza?>(null) }
 
     Column(
         modifier = modifier
@@ -71,10 +82,10 @@ fun CardapioScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // O nome vem da sessao, ou seja, e o nome de quem fez o login.
-            // Antes era "Ola, Ana!" escrito na mao.
+            // O nome vem do viewModel, que pega na sessao: e o nome de
+            // quem fez o login. Antes era "Ola, Ana!" escrito na mao.
             Text(
-                text = "Olá, ${SessaoUsuario.nomeUsuario}!",
+                text = "Olá, ${viewModel.nomeUsuario}!",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
                 // secondary = azul do mockup, usado nos titulos
@@ -103,20 +114,78 @@ fun CardapioScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // ----- LISTA DE PIZZAS -----
-        // LazyColumn e uma lista que rola na vertical e so desenha
-        // os itens que estao aparecendo na tela.
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        // ----- BOTAO DE CRIAR (o "Criar" do CRUD) -----
+        // Abre o formulario vazio. Quem manda o id 0 e o AppNavigation.
+        Button(
+            onClick = { onNovaPizza() },
+            colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         ) {
-            // Para cada pizza da lista, desenha um Card.
-            items(pizzas) { pizza ->
-                CardDaPizza(
-                    pizza = pizza,
-                    onPizzaEscolhida = onPizzaEscolhida
-                )
+            Text(
+                text = "Nova pizza",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // ----- LISTA DE PIZZAS -----
+        if (viewModel.pizzas.isEmpty()) {
+            // Sem este aviso a tela ficaria so com um espaco branco quando
+            // todas as pizzas fossem excluidas.
+            Text(
+                text = "Nenhuma pizza cadastrada",
+                color = CinzaFatia
+            )
+        } else {
+            // LazyColumn e uma lista que rola na vertical e so desenha
+            // os itens que estao aparecendo na tela.
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Para cada pizza do viewModel, desenha um Card.
+                items(viewModel.pizzas) { pizza ->
+                    CardDaPizza(
+                        pizza = pizza,
+                        onPizzaEscolhida = onPizzaEscolhida,
+                        onEditarPizza = onEditarPizza,
+                        // Ainda nao exclui: so marca qual pizza vai aparecer
+                        // na pergunta de confirmacao.
+                        onExcluirPizza = { pizzaParaExcluir = pizza }
+                    )
+                }
             }
         }
+    }
+
+    // ----- CONFIRMACAO DE EXCLUSAO (o "Deletar" do CRUD) -----
+    // Copiamos para uma variavel local porque assim o Kotlin entende que
+    // dentro do if ela nao e mais nula e deixa usar o .nome.
+    val pizzaDoDialogo = pizzaParaExcluir
+    if (pizzaDoDialogo != null) {
+        AlertDialog(
+            // Chamado quando a pessoa toca fora do dialogo: nao exclui nada.
+            onDismissRequest = { pizzaParaExcluir = null },
+            title = { Text("Excluir pizza") },
+            text = { Text("Quer excluir a pizza ${pizzaDoDialogo.nome} do cardápio?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    // Agora sim: o viewModel apaga no banco e pede a lista
+                    // de novo. Depois fechamos o dialogo.
+                    viewModel.excluir(pizzaDoDialogo.id)
+                    pizzaParaExcluir = null
+                }) {
+                    Text(text = "Excluir", color = CoralFatia)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pizzaParaExcluir = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
@@ -131,47 +200,55 @@ fun Categoria(nome: String) {
     }
 }
 
-// Card de uma pizza: nome, descricao, preco e o botao "Escolher".
+// Card de uma pizza: nome, descricao, preco e os tres botoes.
 @Composable
 fun CardDaPizza(
     pizza: Pizza,
-    onPizzaEscolhida: (String) -> Unit
+    onPizzaEscolhida: (String) -> Unit,
+    onEditarPizza: (Long) -> Unit,
+    onExcluirPizza: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Coluna da esquerda: textos da pizza.
-            Column {
-                Text(
-                    text = pizza.nome,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(text = pizza.descricao)
-                // O $ dentro do texto coloca o valor da variavel ali.
-                Text(
-                    text = "R$ ${pizza.preco}",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            // Textos da pizza.
+            Text(
+                text = pizza.nome,
+                fontWeight = FontWeight.Bold
+            )
+            Text(text = pizza.descricao)
+            // O $ dentro do texto coloca o valor da variavel ali.
+            Text(
+                text = "R$ ${pizza.preco}",
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold
+            )
 
-            // Ao clicar, avisa quem chamou a tela qual pizza foi escolhida.
-            Button(onClick = { onPizzaEscolhida(pizza.nome) }) {
-                Text("Escolher")
+            // Linha dos botoes do card.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Avisa quem chamou a tela qual pizza foi escolhida.
+                Button(onClick = { onPizzaEscolhida(pizza.nome) }) {
+                    Text("Escolher")
+                }
+                // Manda o id para o formulario saber qual pizza carregar.
+                TextButton(onClick = { onEditarPizza(pizza.id) }) {
+                    Text("Editar")
+                }
+                TextButton(onClick = { onExcluirPizza() }) {
+                    Text(text = "Excluir", color = CoralFatia)
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CardapioScreenPreview() {
-    FatiaTheme {
-        CardapioScreen(onPizzaEscolhida = {})
-    }
-}
+// Sem @Preview: esta tela agora precisa de um PizzaViewModel, que so existe
+// quando o app esta rodando (ele e criado no AppNavigation).

@@ -29,3 +29,9 @@ data class Personalizar(val nomePizza: String)
 
 @Serializable
 data class Confirmacao(val nomePizza: String)
+
+// Rota do formulario de pizza. Leva o id da pizza que vai ser editada.
+// pizzaId = 0 quer dizer "pizza nova", ou seja, formulario vazio.
+// E a mesma tela para cadastrar e para alterar.
+@Serializable
+data class PizzaForm(val pizzaId: Long)

@@ -19,7 +19,9 @@ import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
 import com.example.fatia.ui.screens.LoginScreen
 import com.example.fatia.ui.screens.PersonalizarPizzaScreen
+import com.example.fatia.ui.screens.PizzaFormScreen
 import com.example.fatia.ui.viewmodel.AuthViewModel
+import com.example.fatia.ui.viewmodel.PizzaViewModel
 
 // A NAVEGACAO DO APP
 //
@@ -38,10 +40,12 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    // O viewModel e criado AQUI, uma vez, e depois passado como parametro
-    // para as telas que precisam dele. Assim o login e o cadastro usam o
-    // mesmo AuthViewModel.
+    // Os viewModels sao criados AQUI, uma vez, e depois passados como
+    // parametro para as telas que precisam deles. Assim o login e o cadastro
+    // usam o mesmo AuthViewModel, e o cardapio e o formulario usam o mesmo
+    // PizzaViewModel (e por isso que o formulario pode guardar os campos).
     val authViewModel: AuthViewModel = viewModel()
+    val pizzaViewModel: PizzaViewModel = viewModel()
 
     // ----- CONTROLE DE SESSAO -----
     //
@@ -112,11 +116,37 @@ fun AppNavigation(
             Scaffold(topBar = { Menu(navController) }) { innerPadding ->
                 CardapioScreen(
                     modifier = Modifier.padding(innerPadding),
+                    viewModel = pizzaViewModel,
                     // O cardapio devolve o nome da pizza clicada e nos
                     // passamos esse nome como argumento da proxima rota.
                     onPizzaEscolhida = { nome ->
                         navController.navigate(Personalizar(nome))
+                    },
+                    // Pizza nova: abrimos o formulario com o id 0.
+                    onNovaPizza = {
+                        navController.navigate(PizzaForm(0))
+                    },
+                    // Editar: mandamos o id da pizza que foi clicada.
+                    onEditarPizza = { id ->
+                        navController.navigate(PizzaForm(id))
                     }
+                )
+            }
+        }
+
+        // ----- FORMULARIO DA PIZZA: com menu e com argumento -----
+        // E a mesma tela para criar e para alterar; o que muda e o pizzaId.
+        composable<PizzaForm> { back ->
+            val rota = back.toRoute<PizzaForm>()
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                PizzaFormScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    pizzaId = rota.pizzaId,
+                    viewModel = pizzaViewModel,
+                    // Nos dois casos voltamos para o cardapio, que recarrega
+                    // a lista do banco no LaunchedEffect dele.
+                    onSalvo = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
                 )
             }
         }
