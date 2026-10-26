@@ -37,6 +37,9 @@ fun Menu(navController: NavHostController) {
             // O botao "Personalizar" saiu do menu: aquela tela precisa de
             // uma pizza escolhida, e so o cardapio sabe qual e. Agora o
             // caminho para ela e sempre o botao "Escolher" de um card.
+            TextButton(onClick = { navController.navigate(MeusPedidos) }) {
+                Text(text = "Pedidos", color = Color.White)
+            }
             TextButton(onClick = {
                 // Sair = fechar a sessao e voltar para o login.
                 // encerrar() apaga o usuario logado da sessao.

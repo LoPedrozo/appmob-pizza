@@ -46,14 +46,15 @@ import com.example.fatia.ui.viewmodel.PizzaViewModel
 // TELA 2 - CARDAPIO (o "Listar" e o "Deletar" do CRUD de pizzas)
 //
 // viewModel = quem fala com o banco. A tela so mostra viewModel.pizzas.
-// onPizzaEscolhida = botao "Escolher" (vai para a tela de personalizar).
+// onPizzaEscolhida = botao "Escolher". Passa o ID da pizza, porque a tela
+//   de personalizar busca o nome e o preco dela no banco.
 // onNovaPizza = botao "Nova pizza" (abre o formulario vazio).
 // onEditarPizza = botao "Editar" de um card (abre o formulario preenchido).
 @Composable
 fun CardapioScreen(
     modifier: Modifier = Modifier,
     viewModel: PizzaViewModel,
-    onPizzaEscolhida: (String) -> Unit,
+    onPizzaEscolhida: (Long) -> Unit,
     onNovaPizza: () -> Unit,
     onEditarPizza: (Long) -> Unit
 ) {
@@ -204,7 +205,7 @@ fun Categoria(nome: String) {
 @Composable
 fun CardDaPizza(
     pizza: Pizza,
-    onPizzaEscolhida: (String) -> Unit,
+    onPizzaEscolhida: (Long) -> Unit,
     onEditarPizza: (Long) -> Unit,
     onExcluirPizza: () -> Unit
 ) {
@@ -234,8 +235,9 @@ fun CardDaPizza(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Avisa quem chamou a tela qual pizza foi escolhida.
-                Button(onClick = { onPizzaEscolhida(pizza.nome) }) {
+                // Avisa quem chamou a tela qual pizza foi escolhida,
+                // mandando o id dela.
+                Button(onClick = { onPizzaEscolhida(pizza.id) }) {
                     Text("Escolher")
                 }
                 // Manda o id para o formulario saber qual pizza carregar.
