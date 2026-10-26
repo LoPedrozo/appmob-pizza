@@ -22,25 +22,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fatia.R
+import com.example.fatia.auth.SessaoUsuario
+import com.example.fatia.data.model.Pizza
 import com.example.fatia.ui.theme.FatiaTheme
 
-// data class = classe feita para guardar dados.
-// Cada pizza tem um nome, uma descricao e um preco.
-data class Pizza(
-    val nome: String,
-    val descricao: String,
-    val preco: Int
-)
+// A data class Pizza saiu deste arquivo e foi para data/model/Pizza.kt,
+// porque agora a pizza e uma linha da tabela "pizzas" do banco (o Model
+// do MVVM) e nao um dado que pertence a esta tela.
 
 // Funcao que devolve a lista de pizzas do cardapio.
-// A lista e fixa (escrita no codigo), nao vem de internet nem de banco.
+// Ela ainda e fixa (escrita no codigo). Na proxima etapa o cardapio vai
+// pedir estas pizzas para o banco, atraves do PizzaViewModel.
+// id = 0 aqui porque estas pizzas da lista fixa nao vieram do banco, e o
+// id e justamente o numero que o banco da para cada linha.
 fun listaDePizzas(): List<Pizza> {
     return listOf(
-        Pizza("Calabresa", "Calabresa, cebola e azeitona", 39),
-        Pizza("Mussarela", "Muito queijo mussarela e orégano", 35),
-        Pizza("Portuguesa", "Presunto, ovo, ervilha e cebola", 42),
-        Pizza("Frango com Catupiry", "Frango desfiado com catupiry", 45),
-        Pizza("Quatro Queijos", "Mussarela, provolone, gorgonzola e parmesão", 47)
+        Pizza(0, "Calabresa", "Calabresa, cebola e azeitona", 39),
+        Pizza(0, "Mussarela", "Muito queijo mussarela e orégano", 35),
+        Pizza(0, "Portuguesa", "Presunto, ovo, ervilha e cebola", 42),
+        Pizza(0, "Frango com Catupiry", "Frango desfiado com catupiry", 45),
+        Pizza(0, "Quatro Queijos", "Mussarela, provolone, gorgonzola e parmesão", 47)
     )
 }
 
@@ -70,8 +71,10 @@ fun CardapioScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // O nome vem da sessao, ou seja, e o nome de quem fez o login.
+            // Antes era "Ola, Ana!" escrito na mao.
             Text(
-                text = "Olá, Ana!",
+                text = "Olá, ${SessaoUsuario.nomeUsuario}!",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
                 // secondary = azul do mockup, usado nos titulos

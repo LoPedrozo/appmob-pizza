@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,27 +36,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fatia.dados.RepositorioUsuarios
-import com.example.fatia.dados.Usuario
 import com.example.fatia.ui.theme.AzulEscuroFatia
 import com.example.fatia.ui.theme.AzulFatia
 import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
-import com.example.fatia.ui.theme.FatiaTheme
+import com.example.fatia.ui.viewmodel.AuthViewModel
 
 // TELA DE CADASTRO
 //
-// Mesmo visual da tela de login. Assim como ela, esta tela nao conhece o
-// navController: ela so avisa o que aconteceu chamando as funcoes que
-// recebeu de fora.
+// Mesmo visual da tela de login. Quem salva o usuario no banco e o
+// AuthViewModel; a tela so junta o que foi digitado e manda para ele.
 //
+// Assim como o login, esta tela nao conhece o navController: ela so avisa o
+// que aconteceu chamando as funcoes que recebeu de fora.
+//
+// viewModel = recebido do AppNavigation, quem fala com o banco.
 // onCadastrado = chamada quando o cadastro deu certo.
 // onVoltarParaLogin = chamada no texto "Ja tenho conta".
 @Composable
 fun CadastroScreen(
     modifier: Modifier = Modifier,
+    viewModel: AuthViewModel,
     onCadastrado: () -> Unit,
     onVoltarParaLogin: () -> Unit
 ) {
@@ -66,8 +68,15 @@ fun CadastroScreen(
     var senha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
 
-    // Guarda a mensagem de erro. Vazio = nenhum erro para mostrar.
-    var erro by remember { mutableStateOf("") }
+    // A mensagem de erro vem do viewModel, porque e ele quem descobre
+    // que aquele e-mail ja esta cadastrado no banco.
+
+    // LaunchedEffect roda o bloco uma vez, quando a tela aparece.
+    // Unit como chave = "nao repita quando a tela se redesenhar".
+    // Serve para limpar um erro antigo que ficou da ultima vez.
+    LaunchedEffect(Unit) {
+        viewModel.limparMensagem()
+    }
 
     // Cores das bordas dos campos de texto (como foi feito em aula).
     val coresInputs = OutlinedTextFieldDefaults.colors(
@@ -181,9 +190,9 @@ fun CadastroScreen(
                     )
 
                     // A mensagem de erro so aparece quando existe erro.
-                    if (erro.isNotEmpty()) {
+                    if (viewModel.mensagem.isNotEmpty()) {
                         Text(
-                            text = erro,
+                            text = viewModel.mensagem,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -194,16 +203,11 @@ fun CadastroScreen(
                     // Ele so liga quando o formulario esta preenchido certo.
                     Button(
                         onClick = {
-                            val novoUsuario = Usuario(
-                                nome = nome,
-                                email = email,
-                                senha = senha
-                            )
-                            // cadastrar devolve false quando o e-mail ja existe.
-                            if (RepositorioUsuarios.cadastrar(novoUsuario)) {
+                            // O viewModel monta o Usuario e manda o DAO salvar
+                            // no banco. Devolve false quando o e-mail ja existe
+                            // e nesse caso a mensagem dele aparece acima.
+                            if (viewModel.cadastrar(nome, email, senha)) {
                                 onCadastrado()
-                            } else {
-                                erro = "Este e-mail já está cadastrado"
                             }
                         },
                         enabled = nome.isNotEmpty() &&
@@ -240,13 +244,5 @@ fun CadastroScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CadastroScreenPreview() {
-    FatiaTheme {
-        CadastroScreen(
-            onCadastrado = {},
-            onVoltarParaLogin = {}
-        )
-    }
-}
+// Sem @Preview pelo mesmo motivo da tela de login: agora ela precisa de um
+// AuthViewModel, que so existe com o app rodando.

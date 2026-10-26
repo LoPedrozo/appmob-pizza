@@ -8,6 +8,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.example.fatia.auth.SessaoUsuario
 import com.example.fatia.ui.theme.AzulFatia
 
 // MENU DO APP
@@ -40,11 +41,15 @@ fun Menu(navController: NavHostController) {
                 Text(text = "Personalizar", color = Color.White)
             }
             TextButton(onClick = {
-                // Login e a startDestination, ou seja, esta no fundo da pilha.
-                // popBackStack volta ate ela e descarta tudo o que estava por
-                // cima. inclusive = false quer dizer "nao remove a propria
-                // tela de login".
-                navController.popBackStack(route = Login, inclusive = false)
+                // Sair = fechar a sessao e voltar para o login.
+                // encerrar() apaga o usuario logado da sessao.
+                SessaoUsuario.encerrar()
+                // popUpTo(0) { inclusive = true } limpa a pilha inteira, para
+                // o botao voltar do celular nao devolver ninguem para dentro
+                // do app depois de sair.
+                navController.navigate(Login) {
+                    popUpTo(0) { inclusive = true }
+                }
             }) {
                 Text(text = "Sair", color = Color.White)
             }

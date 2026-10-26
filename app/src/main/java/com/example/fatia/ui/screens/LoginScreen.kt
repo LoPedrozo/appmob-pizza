@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,25 +38,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fatia.dados.RepositorioUsuarios
 import com.example.fatia.ui.theme.AzulEscuroFatia
 import com.example.fatia.ui.theme.AzulFatia
 import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
-import com.example.fatia.ui.theme.FatiaTheme
+import com.example.fatia.ui.viewmodel.AuthViewModel
 
 // TELA 1 - LOGIN
-// Confere o e-mail e a senha na lista de usuarios do RepositorioUsuarios.
 //
-// A tela nao conhece o navController: ela so avisa o que aconteceu
+// Quem confere o e-mail e a senha no banco e o AuthViewModel. A tela so
+// mostra os campos e pergunta para ele se pode entrar (MVVM: a tela nunca
+// fala com o DAO nem com o banco).
+//
+// A tela tambem nao conhece o navController: ela so avisa o que aconteceu
 // chamando as funcoes que recebeu de fora.
+// viewModel = recebido do AppNavigation, quem fala com o banco.
 // onEntrar = chamada quando o login deu certo.
 // onIrParaCadastro = chamada no texto "Criar conta".
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+    viewModel: AuthViewModel,
     onEntrar: () -> Unit,
     onIrParaCadastro: () -> Unit
 ) {
@@ -64,8 +68,15 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
 
-    // Guarda a mensagem de erro. Vazio = nenhum erro para mostrar.
-    var erro by remember { mutableStateOf("") }
+    // A mensagem de erro NAO fica mais na tela: ela vive no viewModel,
+    // porque e ele quem descobre que o login deu errado.
+
+    // LaunchedEffect roda o bloco uma vez, quando a tela aparece.
+    // Unit como chave = "nao repita quando a tela se redesenhar".
+    // Serve para limpar um erro antigo que ficou da ultima vez.
+    LaunchedEffect(Unit) {
+        viewModel.limparMensagem()
+    }
 
     // Cores das bordas dos campos de texto (como foi feito em aula).
     val coresInputs = OutlinedTextFieldDefaults.colors(
@@ -159,9 +170,9 @@ fun LoginScreen(
                     )
 
                     // A mensagem de erro so aparece quando existe erro.
-                    if (erro.isNotEmpty()) {
+                    if (viewModel.mensagem.isNotEmpty()) {
                         Text(
-                            text = erro,
+                            text = viewModel.mensagem,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -171,12 +182,12 @@ fun LoginScreen(
                     // Botao principal, largura total e fundo coral.
                     Button(
                         onClick = {
-                            // Pergunta ao repositorio se esse e-mail e essa
-                            // senha existem na lista de usuarios.
-                            if (RepositorioUsuarios.autenticar(email, senha)) {
+                            // O viewModel procura o e-mail no banco e confere
+                            // a senha. Quando da certo ele tambem abre a
+                            // sessao e devolve true; o erro ja fica guardado
+                            // no proprio viewModel.
+                            if (viewModel.login(email, senha)) {
                                 onEntrar()
-                            } else {
-                                erro = "E-mail ou senha inválidos"
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
@@ -227,13 +238,6 @@ fun LogoFatia(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    FatiaTheme {
-        LoginScreen(
-            onEntrar = {},
-            onIrParaCadastro = {}
-        )
-    }
-}
+// Esta tela nao tem mais @Preview porque agora ela precisa de um
+// AuthViewModel, e o viewModel so existe quando o app esta rodando
+// de verdade (ele e criado no AppNavigation).
