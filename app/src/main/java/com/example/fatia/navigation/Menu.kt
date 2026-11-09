@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +45,12 @@ fun Menu(navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Endereços"
+                )
+            }
+            IconButton(onClick = { navController.navigate(Avaliacoes) }) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Avaliações"
                 )
             }
             IconButton(onClick = {

@@ -14,6 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.example.fatia.auth.SessaoUsuario
+import com.example.fatia.ui.screens.AvaliacaoFormScreen
+import com.example.fatia.ui.screens.AvaliacoesScreen
 import com.example.fatia.ui.screens.CadastroScreen
 import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
@@ -25,6 +27,7 @@ import com.example.fatia.ui.screens.MeusPedidosScreen
 import com.example.fatia.ui.screens.PersonalizarPizzaScreen
 import com.example.fatia.ui.screens.PizzaFormScreen
 import com.example.fatia.ui.viewmodel.AuthViewModel
+import com.example.fatia.ui.viewmodel.AvaliacaoViewModel
 import com.example.fatia.ui.viewmodel.EnderecoViewModel
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 import com.example.fatia.ui.viewmodel.PizzaViewModel
@@ -38,6 +41,7 @@ fun AppNavigation(
     val pizzaViewModel: PizzaViewModel = viewModel()
     val pedidoViewModel: PedidoViewModel = viewModel()
     val enderecoViewModel: EnderecoViewModel = viewModel()
+    val avaliacaoViewModel: AvaliacaoViewModel = viewModel()
 
     val entradaAtual by navController.currentBackStackEntryAsState()
     val rotaAtual = entradaAtual?.destination
@@ -191,6 +195,34 @@ fun AppNavigation(
                     modifier = Modifier.padding(innerPadding),
                     enderecoId = rota.enderecoId,
                     viewModel = enderecoViewModel,
+                    onSalvo = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable<Avaliacoes> {
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                AvaliacoesScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    viewModel = avaliacaoViewModel,
+                    onNovaAvaliacao = {
+                        navController.navigate(AvaliacaoForm(0))
+                    },
+                    onEditarAvaliacao = { id ->
+                        navController.navigate(AvaliacaoForm(id))
+                    }
+                )
+            }
+        }
+
+        composable<AvaliacaoForm> { back ->
+            val rota = back.toRoute<AvaliacaoForm>()
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                AvaliacaoFormScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    avaliacaoId = rota.avaliacaoId,
+                    viewModel = avaliacaoViewModel,
                     onSalvo = { navController.popBackStack() },
                     onVoltar = { navController.popBackStack() }
                 )
