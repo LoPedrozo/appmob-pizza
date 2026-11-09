@@ -1,4 +1,3 @@
-<!-- Textos fixos do app. Nome que aparece embaixo do icone. -->
 <resources>
     <string name="app_name">Fatia</string>
 </resources>

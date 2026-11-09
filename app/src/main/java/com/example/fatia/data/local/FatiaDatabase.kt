@@ -14,7 +14,7 @@ class FatiaDatabase(context: Context) : SQLiteOpenHelper(
     companion object {
         const val NOME_BANCO = "fatia.db"
 
-        const val VERSAO_BANCO = 1
+        const val VERSAO_BANCO = 2
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -48,6 +48,28 @@ class FatiaDatabase(context: Context) : SQLiteOpenHelper(
         )
 
         db.execSQL(
+            "CREATE TABLE enderecos (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "usuario_id INTEGER NOT NULL, " +
+                "apelido TEXT NOT NULL, " +
+                "cep TEXT NOT NULL, " +
+                "rua TEXT NOT NULL, " +
+                "numero TEXT NOT NULL, " +
+                "bairro TEXT NOT NULL, " +
+                "cidade TEXT NOT NULL)"
+        )
+
+        db.execSQL(
+            "CREATE TABLE avaliacoes (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "usuario_id INTEGER NOT NULL, " +
+                "pizza_nome TEXT NOT NULL, " +
+                "nota INTEGER NOT NULL, " +
+                "comentario TEXT NOT NULL, " +
+                "foto BLOB)"
+        )
+
+        db.execSQL(
             "INSERT INTO usuarios (nome, email, senha) " +
                 "VALUES ('Teste', 'teste@fatia.com', '123456')"
         )
@@ -75,6 +97,8 @@ class FatiaDatabase(context: Context) : SQLiteOpenHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS avaliacoes")
+        db.execSQL("DROP TABLE IF EXISTS enderecos")
         db.execSQL("DROP TABLE IF EXISTS pedidos")
         db.execSQL("DROP TABLE IF EXISTS pizzas")
         db.execSQL("DROP TABLE IF EXISTS usuarios")

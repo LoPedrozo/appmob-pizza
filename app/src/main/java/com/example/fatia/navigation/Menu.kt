@@ -1,8 +1,13 @@
 package com.example.fatia.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -18,22 +23,32 @@ fun Menu(navController: NavHostController) {
         title = { Text("Fatia") },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = AzulFatia,
-            titleContentColor = Color.White
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
         ),
         actions = {
-            TextButton(onClick = { navController.navigate(Cardapio) }) {
-                Text(text = "Cardápio", color = Color.White)
+            IconButton(onClick = { navController.navigate(Cardapio) }) {
+                Icon(
+                    imageVector = Icons.Filled.LocalPizza,
+                    contentDescription = "Cardápio"
+                )
             }
-            TextButton(onClick = { navController.navigate(MeusPedidos) }) {
-                Text(text = "Pedidos", color = Color.White)
+            IconButton(onClick = { navController.navigate(MeusPedidos) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
+                    contentDescription = "Pedidos"
+                )
             }
-            TextButton(onClick = {
+            IconButton(onClick = {
                 SessaoUsuario.encerrar()
                 navController.navigate(Login) {
                     popUpTo(0) { inclusive = true }
                 }
             }) {
-                Text(text = "Sair", color = Color.White)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                    contentDescription = "Sair"
+                )
             }
         }
     )
