@@ -27,6 +27,8 @@ class EnderecoViewModel(application: Application) : AndroidViewModel(application
 
     var mensagem by mutableStateOf("")
 
+    var mensagemCep by mutableStateOf("")
+
     var buscandoCep by mutableStateOf(false)
 
     fun listar() {
@@ -40,6 +42,7 @@ class EnderecoViewModel(application: Application) : AndroidViewModel(application
 
     fun carregar(id: Long) {
         mensagem = ""
+        mensagemCep = ""
 
         if (id == 0L) {
             apelido = ""
@@ -64,12 +67,12 @@ class EnderecoViewModel(application: Application) : AndroidViewModel(application
     fun buscarCep() {
         val cepLimpo = cep.trim().replace("-", "")
 
-        if (cepLimpo.length != 8 || cepLimpo.toIntOrNull() == null) {
-            mensagem = "Informe um CEP com 8 números"
+        if (cepLimpo.length != 8 || !cepLimpo.all { it.isDigit() }) {
+            mensagemCep = "Informe um CEP com 8 números"
             return
         }
 
-        mensagem = ""
+        mensagemCep = ""
         buscandoCep = true
 
         viewModelScope.launch {
@@ -77,14 +80,15 @@ class EnderecoViewModel(application: Application) : AndroidViewModel(application
                 val resposta = ViaCepApi.service.buscar(cepLimpo)
 
                 if (resposta.cep == null) {
-                    mensagem = "CEP não encontrado"
+                    mensagemCep = "CEP não encontrado"
                 } else {
+                    cep = resposta.cep
                     rua = resposta.logradouro ?: ""
                     bairro = resposta.bairro ?: ""
                     cidade = resposta.localidade ?: ""
                 }
             } catch (erro: Exception) {
-                mensagem = "Não foi possível consultar o CEP"
+                mensagemCep = "Não foi possível consultar o CEP"
             } finally {
                 buscandoCep = false
             }
