@@ -31,3 +31,9 @@ data object Enderecos
 
 @Serializable
 data class EnderecoForm(val enderecoId: Long)
+
+@Serializable
+data object Avaliacoes
+
+@Serializable
+data class AvaliacaoForm(val avaliacaoId: Long)
