@@ -18,11 +18,14 @@ import com.example.fatia.ui.screens.CadastroScreen
 import com.example.fatia.ui.screens.CardapioScreen
 import com.example.fatia.ui.screens.ConfirmacaoScreen
 import com.example.fatia.ui.screens.EditarPedidoScreen
+import com.example.fatia.ui.screens.EnderecoFormScreen
+import com.example.fatia.ui.screens.EnderecosScreen
 import com.example.fatia.ui.screens.LoginScreen
 import com.example.fatia.ui.screens.MeusPedidosScreen
 import com.example.fatia.ui.screens.PersonalizarPizzaScreen
 import com.example.fatia.ui.screens.PizzaFormScreen
 import com.example.fatia.ui.viewmodel.AuthViewModel
+import com.example.fatia.ui.viewmodel.EnderecoViewModel
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 import com.example.fatia.ui.viewmodel.PizzaViewModel
 
@@ -34,6 +37,7 @@ fun AppNavigation(
     val authViewModel: AuthViewModel = viewModel()
     val pizzaViewModel: PizzaViewModel = viewModel()
     val pedidoViewModel: PedidoViewModel = viewModel()
+    val enderecoViewModel: EnderecoViewModel = viewModel()
 
     val entradaAtual by navController.currentBackStackEntryAsState()
     val rotaAtual = entradaAtual?.destination
@@ -161,6 +165,34 @@ fun AppNavigation(
                     pedidoId = rota.pedidoId,
                     viewModel = pedidoViewModel,
                     onSalvo = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable<Enderecos> {
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                EnderecosScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    viewModel = enderecoViewModel,
+                    onNovoEndereco = {
+                        navController.navigate(EnderecoForm(0))
+                    },
+                    onEditarEndereco = { id ->
+                        navController.navigate(EnderecoForm(id))
+                    }
+                )
+            }
+        }
+
+        composable<EnderecoForm> { back ->
+            val rota = back.toRoute<EnderecoForm>()
+            Scaffold(topBar = { Menu(navController) }) { innerPadding ->
+                EnderecoFormScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    enderecoId = rota.enderecoId,
+                    viewModel = enderecoViewModel,
+                    onSalvo = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
                 )
             }
         }

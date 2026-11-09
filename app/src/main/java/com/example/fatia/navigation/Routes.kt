@@ -25,3 +25,9 @@ data class PizzaForm(val pizzaId: Long)
 
 @Serializable
 data class EditarPedido(val pedidoId: Long)
+
+@Serializable
+data object Enderecos
+
+@Serializable
+data class EnderecoForm(val enderecoId: Long)
