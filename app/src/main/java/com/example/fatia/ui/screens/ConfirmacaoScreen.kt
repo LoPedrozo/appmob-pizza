@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fatia.R
 import com.example.fatia.ui.theme.AzulFatia
-import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.theme.VerdeFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 
@@ -44,42 +42,44 @@ fun ConfirmacaoScreen(
 
     val pedido = viewModel.pedidoAtual
 
+    val subtitulo = if (pedido == null) {
+        "Pedido não encontrado"
+    } else {
+        "Estamos preparando o seu pedido"
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Icon(
-            painter = painterResource(R.drawable.ic_check),
-            contentDescription = "Pedido confirmado",
-            tint = VerdeFatia,
-            modifier = Modifier.size(64.dp)
-        )
+        CabecalhoDaTela(titulo = "Pedido confirmado!", subtitulo = subtitulo)
 
-        Text(
-            text = "Pedido confirmado!",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.secondary
-        )
-
-        if (pedido == null) {
-            Text(text = "Pedido não encontrado.")
-        } else {
-            Text(text = "Pedido #${pedido.id}")
-
-            Card(modifier = Modifier.fillMaxWidth()) {
+        if (pedido != null) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "Resumo do pedido",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_check),
+                            contentDescription = "Pedido confirmado",
+                            tint = VerdeFatia,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Text(text = "Pedido #${pedido.id}", fontWeight = FontWeight.Bold)
+                    }
                     LinhaDoResumo(titulo = "Pizza", valor = pedido.pizzaNome)
                     LinhaDoResumo(titulo = "Tamanho", valor = pedido.tamanho)
                     LinhaDoResumo(
@@ -90,34 +90,12 @@ fun ConfirmacaoScreen(
                     LinhaDoResumo(titulo = "Total", valor = "R$ ${pedido.total}")
                 }
             }
-
-            Text(text = "Estamos preparando o seu pedido.")
         }
 
-        Button(
-            onClick = { onVerPedidos() },
-            colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-        ) {
-            Text(
-                text = "Ver meus pedidos",
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        BotaoPrincipal(texto = "Ver meus pedidos", onClick = { onVerPedidos() })
 
-        TextButton(
-            onClick = { onVoltarCardapio() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Voltar ao cardápio",
-                color = AzulFatia,
-                fontWeight = FontWeight.Bold
-            )
+        TextButton(onClick = { onVoltarCardapio() }, modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Voltar ao cardápio", color = AzulFatia)
         }
     }
 }
