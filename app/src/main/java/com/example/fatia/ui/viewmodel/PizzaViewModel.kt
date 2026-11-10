@@ -61,7 +61,7 @@ class PizzaViewModel(application: Application) : AndroidViewModel(application) {
 
         val precoNumero = preco.trim().toIntOrNull()
         if (precoNumero == null || precoNumero <= 0) {
-            mensagem = "Informe um preço maior que zero"
+            mensagem = "Informe o preço em reais, só números, maior que zero"
             return false
         }
 

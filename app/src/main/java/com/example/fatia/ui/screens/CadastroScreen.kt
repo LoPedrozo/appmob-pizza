@@ -128,7 +128,7 @@ fun CadastroScreen(
                     OutlinedTextField(
                         value = senha,
                         onValueChange = { senha = it },
-                        label = { Text("Senha") },
+                        label = { Text("Senha (mínimo 4 caracteres)") },
                         singleLine = true,
                         colors = coresDosCampos(),
                         visualTransformation = PasswordVisualTransformation(),

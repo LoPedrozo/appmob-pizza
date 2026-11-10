@@ -120,6 +120,12 @@ class EnderecoViewModel(application: Application) : AndroidViewModel(application
             return false
         }
 
+        val cepSemTraco = cepLimpo.replace("-", "")
+        if (cepSemTraco.length != 8 || !cepSemTraco.all { it.isDigit() }) {
+            mensagem = "Informe um CEP com 8 números"
+            return false
+        }
+
         val endereco = Endereco(
             id = id,
             usuarioId = usuarioId,
