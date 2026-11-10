@@ -36,7 +36,8 @@ fun PersonalizarPizzaScreen(
     modifier: Modifier = Modifier,
     pizzaId: Long,
     viewModel: PedidoViewModel,
-    onPedidoCriado: (Long) -> Unit
+    onPedidoCriado: (Long) -> Unit,
+    onVoltar: () -> Unit
 ) {
     LaunchedEffect(pizzaId) {
         viewModel.carregarPizza(pizzaId)
@@ -77,51 +78,7 @@ fun PersonalizarPizzaScreen(
                     )
                 }
 
-                Text(text = "Tamanho", fontWeight = FontWeight.Bold)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf("P", "M", "G").forEach { tamanho ->
-                        ChipTamanho(
-                            texto = tamanho,
-                            selecionado = tamanho == viewModel.tamanho,
-                            onClick = { viewModel.tamanho = tamanho },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "Borda recheada (+ R$ 8)")
-                    Checkbox(
-                        checked = viewModel.borda,
-                        onCheckedChange = { viewModel.borda = it }
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = "Quantidade")
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = { viewModel.diminuirQuantidade() }) {
-                            Text(text = "–", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
-                        }
-                        Text(text = "${viewModel.quantidade}", fontWeight = FontWeight.Bold)
-                        TextButton(onClick = { viewModel.aumentarQuantidade() }) {
-                            Text(text = "+", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
-                        }
-                    }
-                }
+                OpcoesDoPedido(viewModel = viewModel)
             }
         }
 
@@ -141,6 +98,61 @@ fun PersonalizarPizzaScreen(
                 }
             }
         )
+
+        TextButton(onClick = { onVoltar() }, modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Cancelar", color = AzulFatia)
+        }
+    }
+}
+
+@Composable
+fun OpcoesDoPedido(viewModel: PedidoViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(text = "Tamanho", fontWeight = FontWeight.Bold)
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            listOf("P", "M", "G").forEach { tamanho ->
+                ChipTamanho(
+                    texto = tamanho,
+                    selecionado = tamanho == viewModel.tamanho,
+                    onClick = { viewModel.tamanho = tamanho },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Borda recheada (+ R$ 8)")
+            Checkbox(
+                checked = viewModel.borda,
+                onCheckedChange = { viewModel.borda = it }
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Quantidade")
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = { viewModel.diminuirQuantidade() }) {
+                    Text(text = "–", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
+                }
+                Text(text = "${viewModel.quantidade}", fontWeight = FontWeight.Bold)
+                TextButton(onClick = { viewModel.aumentarQuantidade() }) {
+                    Text(text = "+", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
+                }
+            }
+        }
     }
 }
 

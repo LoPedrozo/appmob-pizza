@@ -34,7 +34,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun cadastrar(nome: String, email: String, senha: String): Boolean {
+        val nomeLimpo = nome.trim()
         val emailLimpo = email.trim()
+
+        if (nomeLimpo.isEmpty() || emailLimpo.isEmpty()) {
+            mensagem = "Preencha o nome e o e-mail"
+            return false
+        }
+
+        if (!emailLimpo.contains("@")) {
+            mensagem = "Informe um e-mail válido"
+            return false
+        }
 
         if (usuarioDAO.buscarPorEmail(emailLimpo) != null) {
             mensagem = "Este e-mail já está cadastrado"
@@ -43,7 +54,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
         val novoUsuario = Usuario(
             id = 0,
-            nome = nome.trim(),
+            nome = nomeLimpo,
             email = emailLimpo,
             senha = senha
         )

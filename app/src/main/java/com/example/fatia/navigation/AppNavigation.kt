@@ -129,7 +129,8 @@ fun AppNavigation(
                         navController.navigate(Confirmacao(id)) {
                             popUpTo(Cardapio)
                         }
-                    }
+                    },
+                    onVoltar = { navController.popBackStack() }
                 )
             }
         }
@@ -141,7 +142,11 @@ fun AppNavigation(
                     modifier = Modifier.padding(innerPadding),
                     pedidoId = rota.pedidoId,
                     viewModel = pedidoViewModel,
-                    onVerPedidos = { navController.navigate(MeusPedidos) },
+                    onVerPedidos = {
+                        navController.navigate(MeusPedidos) {
+                            popUpTo(Cardapio)
+                        }
+                    },
                     onVoltarCardapio = {
                         navController.popBackStack(route = Cardapio, inclusive = false)
                     }
@@ -168,7 +173,8 @@ fun AppNavigation(
                     modifier = Modifier.padding(innerPadding),
                     pedidoId = rota.pedidoId,
                     viewModel = pedidoViewModel,
-                    onSalvo = { navController.popBackStack() }
+                    onSalvo = { navController.popBackStack() },
+                    onVoltar = { navController.popBackStack() }
                 )
             }
         }
