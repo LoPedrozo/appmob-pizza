@@ -2,10 +2,26 @@ package com.example.fatia.data.dal
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import com.example.fatia.data.local.FatiaDatabase
 import com.example.fatia.data.model.Pizza
 
 class PizzaDAO(private val context: Context) {
+
+    fun inserir(pizza: Pizza): Long {
+        val fatiaDatabase = FatiaDatabase(context)
+        val banco = fatiaDatabase.writableDatabase
+
+        val valores = ContentValues()
+        valores.put("nome", pizza.nome)
+        valores.put("descricao", pizza.descricao)
+        valores.put("preco", pizza.preco)
+
+        val id = banco.insert("pizzas", null, valores)
+
+        banco.close()
+        return id
+    }
 
     fun listar(): List<Pizza> {
         val fatiaDatabase = FatiaDatabase(context)
@@ -24,13 +40,7 @@ class PizzaDAO(private val context: Context) {
         val pizzas = mutableListOf<Pizza>()
 
         while (cursor.moveToNext()) {
-            val pizza = Pizza(
-                id = cursor.getLong(0),
-                nome = cursor.getString(1),
-                descricao = cursor.getString(2),
-                preco = cursor.getInt(3)
-            )
-            pizzas.add(pizza)
+            pizzas.add(lerPizza(cursor))
         }
 
         cursor.close()
@@ -55,32 +65,12 @@ class PizzaDAO(private val context: Context) {
         var pizza: Pizza? = null
 
         if (cursor.moveToFirst()) {
-            pizza = Pizza(
-                id = cursor.getLong(0),
-                nome = cursor.getString(1),
-                descricao = cursor.getString(2),
-                preco = cursor.getInt(3)
-            )
+            pizza = lerPizza(cursor)
         }
 
         cursor.close()
         banco.close()
         return pizza
-    }
-
-    fun inserir(pizza: Pizza): Long {
-        val fatiaDatabase = FatiaDatabase(context)
-        val banco = fatiaDatabase.writableDatabase
-
-        val valores = ContentValues()
-        valores.put("nome", pizza.nome)
-        valores.put("descricao", pizza.descricao)
-        valores.put("preco", pizza.preco)
-
-        val id = banco.insert("pizzas", null, valores)
-
-        banco.close()
-        return id
     }
 
     fun alterar(pizza: Pizza): Int {
@@ -115,5 +105,14 @@ class PizzaDAO(private val context: Context) {
 
         banco.close()
         return linhas
+    }
+
+    private fun lerPizza(cursor: Cursor): Pizza {
+        return Pizza(
+            id = cursor.getLong(0),
+            nome = cursor.getString(1),
+            descricao = cursor.getString(2),
+            preco = cursor.getInt(3)
+        )
     }
 }

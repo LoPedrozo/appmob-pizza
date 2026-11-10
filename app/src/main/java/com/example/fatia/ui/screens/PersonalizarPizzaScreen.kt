@@ -28,11 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fatia.ui.theme.AmareloFatia
 import com.example.fatia.ui.theme.AzulFatia
+import com.example.fatia.ui.theme.CinzaChipFatia
 import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
-
-val CinzaChipFatia = Color(0xFFF0F0F0)
 
 @Composable
 fun PersonalizarPizzaScreen(

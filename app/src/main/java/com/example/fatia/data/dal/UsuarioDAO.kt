@@ -7,7 +7,7 @@ import com.example.fatia.data.model.Usuario
 
 class UsuarioDAO(private val context: Context) {
 
-    fun cadastrar(usuario: Usuario): Long {
+    fun inserir(usuario: Usuario): Long {
         val fatiaDatabase = FatiaDatabase(context)
         val banco = fatiaDatabase.writableDatabase
 

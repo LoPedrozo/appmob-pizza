@@ -48,7 +48,6 @@ import com.example.fatia.ui.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
     viewModel: AuthViewModel,
     onEntrar: () -> Unit,
     onIrParaCadastro: () -> Unit
@@ -67,7 +66,7 @@ fun LoginScreen(
     )
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {
@@ -183,9 +182,9 @@ fun LoginScreen(
 }
 
 @Composable
-fun LogoFatia(modifier: Modifier = Modifier) {
+fun LogoFatia() {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(64.dp)
             .background(CoralFatia, CircleShape),
         contentAlignment = Alignment.Center

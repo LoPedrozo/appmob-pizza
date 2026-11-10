@@ -46,7 +46,6 @@ import com.example.fatia.ui.viewmodel.AuthViewModel
 
 @Composable
 fun CadastroScreen(
-    modifier: Modifier = Modifier,
     viewModel: AuthViewModel,
     onCadastrado: () -> Unit,
     onVoltarParaLogin: () -> Unit
@@ -67,7 +66,7 @@ fun CadastroScreen(
     )
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(AzulFatia)
     ) {

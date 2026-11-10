@@ -47,7 +47,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             email = emailLimpo,
             senha = senha
         )
-        usuarioDAO.cadastrar(novoUsuario)
+        usuarioDAO.inserir(novoUsuario)
 
         mensagem = ""
         return true
