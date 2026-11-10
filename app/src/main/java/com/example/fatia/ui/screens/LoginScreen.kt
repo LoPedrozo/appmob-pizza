@@ -1,7 +1,6 @@
 package com.example.fatia.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,14 +17,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,12 +55,6 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.limparMensagem()
     }
-
-    val coresInputs = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
-        disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-    )
 
     Box(
         modifier = Modifier
@@ -121,7 +112,7 @@ fun LoginScreen(
                         onValueChange = { email = it },
                         label = { Text("E-mail") },
                         singleLine = true,
-                        colors = coresInputs,
+                        colors = coresDosCampos(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -131,7 +122,7 @@ fun LoginScreen(
                         onValueChange = { senha = it },
                         label = { Text("Senha") },
                         singleLine = true,
-                        colors = coresInputs,
+                        colors = coresDosCampos(),
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         modifier = Modifier.fillMaxWidth()
@@ -146,35 +137,18 @@ fun LoginScreen(
                         )
                     }
 
-                    Button(
+                    BotaoPrincipal(
+                        texto = "Entrar",
                         onClick = {
                             if (viewModel.login(email, senha)) {
                                 onEntrar()
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                    ) {
-                        Text(
-                            text = "Entrar",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Text(
-                        text = "Criar conta",
-                        color = AzulFatia,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onIrParaCadastro() }
-                            .padding(8.dp)
+                        }
                     )
+
+                    TextButton(onClick = { onIrParaCadastro() }, modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Criar conta", color = AzulFatia, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

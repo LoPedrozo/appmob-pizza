@@ -5,16 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fatia.data.model.Pizza
+import com.example.fatia.ui.theme.AzulFatia
 import com.example.fatia.ui.theme.CinzaFatia
 import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.PizzaViewModel
@@ -54,41 +55,18 @@ fun CardapioScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        Text(
-            text = "Olá, ${viewModel.nomeUsuario}!",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.secondary
+        CabecalhoDaTela(
+            titulo = "Olá, ${viewModel.nomeUsuario}!",
+            subtitulo = "Escolha a sua pizza"
         )
 
-        Text(
-            text = "Escolha a sua pizza",
-            fontWeight = FontWeight.Bold
-        )
-
-        Button(
-            onClick = { onNovaPizza() },
-            colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            Text(
-                text = "Nova pizza",
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        BotaoPrincipal(texto = "Nova pizza", onClick = { onNovaPizza() })
 
         if (viewModel.pizzas.isEmpty()) {
-            Text(
-                text = "Nenhuma pizza cadastrada",
-                color = CinzaFatia
-            )
+            ListaVazia(icone = Icons.Filled.LocalPizza, texto = "Nenhuma pizza cadastrada")
         } else {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(viewModel.pizzas) { pizza ->
                     CardDaPizza(
@@ -118,7 +96,7 @@ fun CardapioScreen(
             },
             dismissButton = {
                 TextButton(onClick = { pizzaParaExcluir = null }) {
-                    Text("Cancelar")
+                    Text(text = "Cancelar", color = AzulFatia)
                 }
             }
         )
@@ -132,34 +110,34 @@ fun CardDaPizza(
     onEditar: (Long) -> Unit,
     onExcluir: () -> Unit
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = pizza.nome,
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = pizza.descricao)
-            Text(
-                text = "R$ ${pizza.preco}",
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(onClick = { onEscolher(pizza.id) }) {
+                Text(text = pizza.nome, fontWeight = FontWeight.Bold)
+                Text(text = "R$ ${pizza.preco}", color = CoralFatia, fontWeight = FontWeight.Bold)
+            }
+            Text(text = pizza.descricao, color = CinzaFatia)
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Button(
+                    onClick = { onEscolher(pizza.id) },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text("Escolher")
                 }
                 TextButton(onClick = { onEditar(pizza.id) }) {
-                    Text("Editar")
+                    Text(text = "Editar", color = AzulFatia)
                 }
                 TextButton(onClick = { onExcluir() }) {
                     Text(text = "Excluir", color = CoralFatia)

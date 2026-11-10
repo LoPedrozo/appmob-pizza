@@ -7,7 +7,8 @@ import androidx.compose.runtime.Composable
 private val CoresDoApp = lightColorScheme(
     primary = CoralFatia,
     secondary = AzulFatia,
-    tertiary = AmareloFatia
+    tertiary = AmareloFatia,
+    background = FundoFatia
 )
 
 @Composable

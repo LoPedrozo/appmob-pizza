@@ -3,10 +3,7 @@ package com.example.fatia.ui.screens
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,14 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -35,8 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fatia.ui.theme.AzulFatia
-import com.example.fatia.ui.theme.CinzaFatia
-import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.AvaliacaoViewModel
 
 @Composable
@@ -63,59 +60,36 @@ fun AvaliacaoFormScreen(
         "Editar avaliação"
     }
 
-    val coresInputs = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
-        disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-    )
-
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(AzulFatia)
+            .imePadding()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        CabecalhoDaTela(titulo = titulo, subtitulo = "Conte o que achou da pizza")
+
         Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding()
-                    .verticalScroll(rememberScrollState())
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
-                Text(
-                    text = titulo,
-                    color = AzulFatia,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                Text(
-                    text = "Conte o que achou da pizza",
-                    color = CinzaFatia,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
                 OutlinedTextField(
                     value = viewModel.pizzaNome,
                     onValueChange = { viewModel.pizzaNome = it },
                     label = { Text("Pizza") },
                     singleLine = true,
-                    colors = coresInputs,
+                    colors = coresDosCampos(),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Text(
-                    text = "Nota",
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "Nota", fontWeight = FontWeight.Bold)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -135,7 +109,7 @@ fun AvaliacaoFormScreen(
                     value = viewModel.comentario,
                     onValueChange = { viewModel.comentario = it },
                     label = { Text("Comentário") },
-                    colors = coresInputs,
+                    colors = coresDosCampos(),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -157,7 +131,7 @@ fun AvaliacaoFormScreen(
                     "Trocar foto"
                 }
 
-                Button(
+                TextButton(
                     onClick = {
                         try {
                             camera.launch(null)
@@ -165,58 +139,39 @@ fun AvaliacaoFormScreen(
                             viewModel.mensagem = "Não foi possível abrir a câmera"
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = AzulFatia),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+                    colors = ButtonDefaults.textButtonColors(contentColor = AzulFatia),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    Icon(imageVector = Icons.Filled.PhotoCamera, contentDescription = null)
                     Text(
                         text = textoBotaoFoto,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
-
-                if (viewModel.mensagem.isNotEmpty()) {
-                    Text(
-                        text = viewModel.mensagem,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        if (viewModel.salvar(avaliacaoId)) {
-                            onSalvo()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = CoralFatia),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                ) {
-                    Text(
-                        text = "Salvar",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Text(
-                    text = "Cancelar",
-                    color = AzulFatia,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onVoltar() }
-                        .padding(8.dp)
-                )
             }
+        }
+
+        if (viewModel.mensagem.isNotEmpty()) {
+            Text(
+                text = viewModel.mensagem,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        BotaoPrincipal(
+            texto = "Salvar",
+            onClick = {
+                if (viewModel.salvar(avaliacaoId)) {
+                    onSalvo()
+                }
+            }
+        )
+
+        TextButton(onClick = { onVoltar() }, modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Cancelar", color = AzulFatia)
         }
     }
 }
