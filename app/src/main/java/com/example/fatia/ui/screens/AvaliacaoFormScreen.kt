@@ -96,7 +96,7 @@ fun AvaliacaoFormScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     listOf(1, 2, 3, 4, 5).forEach { valor ->
-                        ChipTamanho(
+                        ChipOpcao(
                             texto = valor.toString(),
                             selecionado = valor == viewModel.nota,
                             onClick = { viewModel.nota = valor },

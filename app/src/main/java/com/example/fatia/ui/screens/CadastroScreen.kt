@@ -147,6 +147,14 @@ fun CadastroScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    if (confirmarSenha.isNotEmpty() && confirmarSenha != senha) {
+                        Text(
+                            text = "As senhas não são iguais",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
                     if (viewModel.mensagem.isNotEmpty()) {
                         Text(
                             text = viewModel.mensagem,

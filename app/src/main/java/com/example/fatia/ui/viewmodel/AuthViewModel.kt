@@ -16,7 +16,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     var mensagem by mutableStateOf("")
 
     fun login(email: String, senha: String): Boolean {
-        val usuario = usuarioDAO.buscarPorEmail(email.trim())
+        val usuario = usuarioDAO.buscarPorEmail(email.trim().lowercase())
 
         if (usuario == null) {
             mensagem = "E-mail ou senha inválidos"
@@ -35,7 +35,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun cadastrar(nome: String, email: String, senha: String): Boolean {
         val nomeLimpo = nome.trim()
-        val emailLimpo = email.trim()
+        val emailLimpo = email.trim().lowercase()
 
         if (nomeLimpo.isEmpty() || emailLimpo.isEmpty()) {
             mensagem = "Preencha o nome e o e-mail"
