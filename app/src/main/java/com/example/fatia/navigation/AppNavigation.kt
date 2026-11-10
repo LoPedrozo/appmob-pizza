@@ -154,7 +154,7 @@ fun AppNavigation(
                 MeusPedidosScreen(
                     modifier = Modifier.padding(innerPadding),
                     viewModel = pedidoViewModel,
-                    onAlterar = { id ->
+                    onEditarPedido = { id ->
                         navController.navigate(EditarPedido(id))
                     }
                 )

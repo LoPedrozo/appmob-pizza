@@ -33,13 +33,13 @@ import com.example.fatia.ui.viewmodel.PedidoViewModel
 fun MeusPedidosScreen(
     modifier: Modifier = Modifier,
     viewModel: PedidoViewModel,
-    onAlterar: (Long) -> Unit
+    onEditarPedido: (Long) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.listar()
     }
 
-    var pedidoParaCancelar by remember { mutableStateOf<Pedido?>(null) }
+    var pedidoParaExcluir by remember { mutableStateOf<Pedido?>(null) }
 
     Column(
         modifier = modifier
@@ -67,30 +67,30 @@ fun MeusPedidosScreen(
                 items(viewModel.pedidos) { pedido ->
                     CardDoPedido(
                         pedido = pedido,
-                        onAlterar = onAlterar,
-                        onCancelar = { pedidoParaCancelar = pedido }
+                        onEditar = onEditarPedido,
+                        onExcluir = { pedidoParaExcluir = pedido }
                     )
                 }
             }
         }
     }
 
-    val pedidoDoDialogo = pedidoParaCancelar
+    val pedidoDoDialogo = pedidoParaExcluir
     if (pedidoDoDialogo != null) {
         AlertDialog(
-            onDismissRequest = { pedidoParaCancelar = null },
+            onDismissRequest = { pedidoParaExcluir = null },
             title = { Text("Cancelar pedido") },
             text = { Text("Quer cancelar o pedido #${pedidoDoDialogo.id}?") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.excluir(pedidoDoDialogo.id)
-                    pedidoParaCancelar = null
+                    pedidoParaExcluir = null
                 }) {
                     Text(text = "Cancelar pedido", color = CoralFatia)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { pedidoParaCancelar = null }) {
+                TextButton(onClick = { pedidoParaExcluir = null }) {
                     Text("Voltar")
                 }
             }
@@ -101,8 +101,8 @@ fun MeusPedidosScreen(
 @Composable
 fun CardDoPedido(
     pedido: Pedido,
-    onAlterar: (Long) -> Unit,
-    onCancelar: () -> Unit
+    onEditar: (Long) -> Unit,
+    onExcluir: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -130,10 +130,10 @@ fun CardDoPedido(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = { onAlterar(pedido.id) }) {
+                Button(onClick = { onEditar(pedido.id) }) {
                     Text("Alterar")
                 }
-                TextButton(onClick = { onCancelar() }) {
+                TextButton(onClick = { onExcluir() }) {
                     Text(text = "Cancelar pedido", color = CoralFatia)
                 }
             }

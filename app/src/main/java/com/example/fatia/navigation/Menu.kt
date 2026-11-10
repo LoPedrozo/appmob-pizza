@@ -29,25 +29,45 @@ fun Menu(navController: NavHostController) {
             actionIconContentColor = Color.White
         ),
         actions = {
-            IconButton(onClick = { navController.navigate(Cardapio) }) {
+            IconButton(onClick = {
+                navController.navigate(Cardapio) {
+                    popUpTo(Cardapio)
+                    launchSingleTop = true
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Filled.LocalPizza,
                     contentDescription = "Cardápio"
                 )
             }
-            IconButton(onClick = { navController.navigate(MeusPedidos) }) {
+            IconButton(onClick = {
+                navController.navigate(MeusPedidos) {
+                    popUpTo(Cardapio)
+                    launchSingleTop = true
+                }
+            }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                     contentDescription = "Pedidos"
                 )
             }
-            IconButton(onClick = { navController.navigate(Enderecos) }) {
+            IconButton(onClick = {
+                navController.navigate(Enderecos) {
+                    popUpTo(Cardapio)
+                    launchSingleTop = true
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = "Endereços"
                 )
             }
-            IconButton(onClick = { navController.navigate(Avaliacoes) }) {
+            IconButton(onClick = {
+                navController.navigate(Avaliacoes) {
+                    popUpTo(Cardapio)
+                    launchSingleTop = true
+                }
+            }) {
                 Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = "Avaliações"
