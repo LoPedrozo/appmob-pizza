@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -40,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.example.fatia.ui.theme.AzulEscuroFatia
 import com.example.fatia.ui.theme.AzulFatia
 import com.example.fatia.ui.theme.CinzaFatia
-import com.example.fatia.ui.theme.CoralFatia
 import com.example.fatia.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -152,22 +149,5 @@ fun LoginScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun LogoFatia() {
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .background(CoralFatia, CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "F",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.headlineMedium
-        )
     }
 }

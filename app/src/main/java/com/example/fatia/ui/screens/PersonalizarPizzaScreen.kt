@@ -1,11 +1,9 @@
 package com.example.fatia.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,11 +21,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fatia.ui.theme.AmareloFatia
 import com.example.fatia.ui.theme.AzulFatia
-import com.example.fatia.ui.theme.CinzaChipFatia
 import com.example.fatia.ui.viewmodel.PedidoViewModel
 
 @Composable
@@ -102,81 +97,5 @@ fun PersonalizarPizzaScreen(
         TextButton(onClick = { onVoltar() }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Cancelar", color = AzulFatia)
         }
-    }
-}
-
-@Composable
-fun OpcoesDoPedido(viewModel: PedidoViewModel) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(text = "Tamanho", fontWeight = FontWeight.Bold)
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            listOf("P", "M", "G").forEach { tamanho ->
-                ChipTamanho(
-                    texto = tamanho,
-                    selecionado = tamanho == viewModel.tamanho,
-                    onClick = { viewModel.tamanho = tamanho },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Borda recheada (+ R$ 8)")
-            Checkbox(
-                checked = viewModel.borda,
-                onCheckedChange = { viewModel.borda = it }
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Quantidade")
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { viewModel.diminuirQuantidade() }) {
-                    Text(text = "–", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
-                }
-                Text(text = "${viewModel.quantidade}", fontWeight = FontWeight.Bold)
-                TextButton(onClick = { viewModel.aumentarQuantidade() }) {
-                    Text(text = "+", color = AzulFatia, style = MaterialTheme.typography.titleLarge)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ChipTamanho(
-    texto: String,
-    selecionado: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(40.dp)
-            .background(
-                if (selecionado) AmareloFatia else CinzaChipFatia,
-                RoundedCornerShape(12.dp)
-            )
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = texto,
-            fontWeight = FontWeight.Bold,
-            color = AzulFatia
-        )
     }
 }

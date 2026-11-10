@@ -99,17 +99,3 @@ fun ConfirmacaoScreen(
         }
     }
 }
-
-@Composable
-fun LinhaDoResumo(titulo: String, valor: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = titulo)
-        Text(
-            text = valor,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
